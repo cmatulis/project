@@ -25,6 +25,9 @@ if(isset($_POST['new_entry'])) {
     insertPost($dbh,$poster,$_POST['new_entry'], $_POST['postTitle']);
 }
 
+if(isset($_POST['fileInput'])){
+	insertUpload($dbh, $poster, $_POST['fileInput'], $_POST['uploadTitle'], $_POST['image_caption']);
+}
 
 ?>
 </body>

@@ -7,6 +7,11 @@ function insertPost($dbh, $poster, $entry, $title){
   $rows = prepared_statement($dbh, $insert, array($poster, $entry, $title));
   }
 
+function insertUpload($dbh, $poster, $upload, $title, $caption){
+  $insert = "INSERT INTO image_posts(user, image, title, caption) VALUES (?, ?, ?, ?)";
+  $rows = prepared_statement($dbh, $insert, array($poster, $upload, $caption, $title));
+  }
+
 function printPostings($dbh){
   echo "<P> Here are the five most recent postings within the last hour:";
   $resultset = $dbh->query("SELECT time(entered) as time, user, entry FROM blog_entry WHERE timestampdiff(minute, entered, now())<60 ORDER BY entered DESC LIMIT 5");
@@ -79,24 +84,24 @@ function printUploadForm()
   <input type="submit" value="submit">
 </form>
 -->
-<form class="form-horizontal">  
+<form class="form-horizontal" method="post" action = "postPage.php?type=">  
         <fieldset>  
           <div class="control-group">  
             <label class="control-label" for="input01">Title</label>  
             <div class="controls">  
-              <input type="text" class="input-xlarge" id="input01">  
+              <input type="text" class="input-xlarge" name = "uploadTitle" id="uploadTitle">  
             </div>  
           </div>  
           <div class="control-group">  
             <label class="control-label" for="fileInput">Select file to Upload</label>  
             <div class="controls">  
-              <input class="input-file" id="fileInput" type="file">  
+              <input class="input-file" name = "fileInput" id="fileInput" type="file">  
             </div>  
           </div>  
           <div class="control-group">  
             <label class="control-label" for="textarea">Caption</label>  
             <div class="controls">  
-              <textarea class="input-xlarge" id="textarea" rows="3" cols = "60"></textarea>  
+              <textarea class="input-xlarge" name = "image_caption" id="image_caption" rows="3" cols = "60"></textarea>  
             </div>  
           </div>  
           <div class="form-actions">  
