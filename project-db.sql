@@ -1,5 +1,7 @@
 use cmatulis_db;
 
+drop table if exists likes;
+drop table if exists comments;
 drop table if exists follows;
 drop table if exists profile;
 drop table if exists blog_entry;
@@ -29,6 +31,8 @@ create table blog_entry(
        entered timestamp,
        user varchar(30),
        entry text,
+       entry_id varchar(30) primary key,
+       INDEX (entry_id),
        foreign key (user) references blog_user(user))
        TYPE = InnoDB;
 
@@ -46,3 +50,18 @@ create table follows(
        following varchar(30),
        foreign key (user) references blog_user(user))
        TYPE = InnoDB;
+
+create table comments(
+       entry_id varchar(30),
+       commenting_user varchar(30),
+       comment_time timestamp,
+       comment_text text,
+       foreign key (entry_id) references blog_entry(entry_id))
+	TYPE = InnoDB;
+
+create table likes(
+       entry_id varchar(30),
+       liking_user varchar(30),
+       like_time timestamp,
+       foreign key (entry_id) references blog_entry(entry_id))
+	TYPE = InnoDB;
