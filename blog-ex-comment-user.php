@@ -12,9 +12,9 @@ if(!isset($_COOKIE['304bloguserphp'])) {
     header('Location: blog-ex-login-user.php');
 }
 $poster = $_COOKIE['304bloguserphp']; 
-if(isset($_POST['new_entry'])) {
-    insertPost($dbh,$poster,$_POST['new_entry']);
-}
+//if(isset($_POST['new_entry'])) {
+  //  insertPost($dbh,$poster,$_POST['new_entry']);
+//}
 
 printBlog($dbh, $poster);
 //printPostings($dbh);

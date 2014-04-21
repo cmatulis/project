@@ -36,13 +36,75 @@ function loginCredentialsAreOkay($dbh, $username, $password){
 
 function printCommentForm1()
 {
-    $script = 'blog-ex-comment-user.php';
+    //$script = 'blog-ex-comment-user.php';
     print <<<EOT
-<form method="post" action="$script">
-   <label for="new_entry">Comments</label> <br>
+<!--
+<form method="post" action="postPage.php?type=">
+   <label for="new_entry">Content</label> <br>
   <textarea name="new_entry" id="new_entry" rows=5 cols=60></textarea><br>
   <input type="submit" value="submit">
 </form>
+-->
+<form class="form-horizontal" method="post" action = "postPage.php?type=">  
+        <fieldset>  
+          
+          <div class="control-group">  
+            <label class="control-label" for="input01">Title</label>  
+            <div class="controls">  
+              <input type="text" class="input-xlarge" id="input01">   
+            </div>  
+          </div>  
+          <div class="control-group">  
+            <label class="control-label" for="textarea">Text Contents</label>  
+            <div class="controls">  
+              <textarea class="input-xlarge" name="new_entry" id="new_entry" rows="5" cols="60"></textarea>  
+            </div>  
+          </div>  
+          <div class="form-actions">  
+            <button type="submit" class="btn btn-primary">Post</button>  
+          </div>  
+        </fieldset>  
+</form>  
+EOT;
+}
+
+function printUploadForm()
+{
+    //$script = 'blog-ex-comment-user.php';
+    print <<<EOT
+<!--
+<form method="post" action="postPage.php?type=">
+   <label for="new_entry">Content</label> <br>
+  <textarea name="new_entry" id="new_entry" rows=5 cols=60></textarea><br>
+  <input type="submit" value="submit">
+</form>
+-->
+<form class="form-horizontal">  
+        <fieldset>  
+          <div class="control-group">  
+            <label class="control-label" for="input01">Title</label>  
+            <div class="controls">  
+              <input type="text" class="input-xlarge" id="input01">  
+            </div>  
+          </div>  
+          <div class="control-group">  
+            <label class="control-label" for="fileInput">Select file to Upload</label>  
+            <div class="controls">  
+              <input class="input-file" id="fileInput" type="file">  
+            </div>  
+          </div>  
+          <div class="control-group">  
+            <label class="control-label" for="textarea">Caption</label>  
+            <div class="controls">  
+              <textarea class="input-xlarge" id="textarea" rows="3" cols = "60"></textarea>  
+            </div>  
+          </div>  
+          <div class="form-actions">  
+            <button type="submit" class="btn btn-primary">Post</button>  
+            <button class="btn">Cancel</button>  
+          </div>  
+        </fieldset>  
+</form>  
 EOT;
 }
 
@@ -206,7 +268,7 @@ print <<<EOT
       <div class="container">
         <nav class="blog-nav">
           <a class="blog-nav-item active" href="#">Blog</a>
-	  <a class = "blog-nav-item" href = "postPage.php">Post</a>
+	  <a class = "blog-nav-item" href = "postPage.php?type=">Post</a>
           <a class="blog-nav-item" href="followersPage.php">Followers</a>
           <a class="blog-nav-item" href="#">Following</a>
 	<a class = "blog-nav-item" href ="#">Profile</a>
@@ -347,9 +409,9 @@ print <<<EOT
       <div class="container">
         <nav class="blog-nav">
           <a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a>
-	  <a class = "blog-nav-item active" href = "postPage.php">Post</a>
+	  <a class = "blog-nav-item active" href = "#">Post</a>
           <a class="blog-nav-item" href="followersPage.php">Followers</a>
-          <a class="blog-nav-item" href="#">Following</a>
+          <a class="blog-nav-item" href="followingPage.php">Following</a>
 	<a class = "blog-nav-item" href ="#">Profile</a>
 			      <a class = "blog-nav-item" href = "toHomePage.php">Home</a>
         </nav>
@@ -361,8 +423,21 @@ print <<<EOT
       <div class="row">
 <div class="col-sm-8 blog-main">
 EOT;
-printCommentForm1();
+print <<<EOT
+    <div class="container">
+
+      <div class="blog-header">
+        <p class="lead blog-description">Select the type of post, and then submit your new post to your blog.</p>
+      </div>
+
+<a href="postPage.php?type=text" class="btn btn-default btn-med" role="button"><span class="glyphicon glyphicon-font"></span> Text</a>
+<a href="postPage.php?type=upload" class="btn btn-default btn-med" role="button"><span class="glyphicon glyphicon-upload"></span> Upload</a>
+EOT;
+
+
 }
+
+
 function printAllPosts($dbh){
 
 print <<<EOT
@@ -634,7 +709,7 @@ print <<<EOT
       <div class="container">
         <nav class="blog-nav">
           <a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a>
-	  <a class = "blog-nav-item" href = "postPage.php">Post</a>
+	  <a class = "blog-nav-item" href = "postPage.php?type=">Post</a>
           <a class="blog-nav-item active" href="#">Followers</a>
           <a class="blog-nav-item" href="followingPage.php">Following</a>
 	<a class = "blog-nav-item" href ="#">Profile</a>
@@ -744,7 +819,7 @@ print <<<EOT
       <div class="container">
         <nav class="blog-nav">
           <a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a>
-	  <a class = "blog-nav-item" href = "postPage.php">Post</a>
+	  <a class = "blog-nav-item" href = "postPage.php?type=">Post</a>
           <a class="blog-nav-item" href="followersPage.php">Followers</a>
           <a class="blog-nav-item active" href="#">Following</a>
 	<a class = "blog-nav-item" href ="#">Profile</a>
