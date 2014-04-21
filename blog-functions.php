@@ -1,0 +1,822 @@
+<?php
+  // Database operations
+
+
+function insertPost($dbh, $poster, $entry){
+  $insert = "INSERT INTO blog_entry(user, entry) VALUES (?, ?)";
+  $rows = prepared_statement($dbh, $insert, array($poster, $entry));
+  }
+
+function printPostings($dbh){
+  echo "<P> Here are the five most recent postings within the last hour:";
+  $resultset = $dbh->query("SELECT time(entered) as time, user, entry FROM blog_entry WHERE timestampdiff(minute, entered, now())<60 ORDER BY entered DESC LIMIT 5");
+  //Get all the blog entries, including, presumably, the one just added, if any
+  echo "<dl>\n";
+  while ($row = $resultset -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+    echo "<dt>" .$row['user'] . " at " .$row['time'] . "</dt><dd>" . $row['entry'] . "</dd>\n";
+  }
+  echo "</dl>\n";
+}
+
+
+
+
+
+function loginCredentialsAreOkay($dbh, $username, $password){
+  $check = "SELECT count(*) AS n FROM blog_user WHERE user = ? AND pass=?";
+    $resultset = prepared_query($dbh, $check, array($username,$password));
+    $row = $resultset->fetchRow();
+    return( $row[0] == 1 );
+}
+    
+// ================================================================
+// printing stuff
+
+// This function prints a one-input form:  just the comment box
+
+function printCommentForm1()
+{
+    $script = 'blog-ex-comment-user.php';
+    print <<<EOT
+<form method="post" action="$script">
+   <label for="new_entry">Comments</label> <br>
+  <textarea name="new_entry" id="new_entry" rows=5 cols=60></textarea><br>
+  <input type="submit" value="submit">
+</form>
+EOT;
+}
+
+// This function prints a two-input form:  the poster box and the comment box
+
+
+function printPageHeader() {
+    print <<<EOT
+   <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Poster</a>
+        </div>
+      
+
+        <div class="navbar-collapse collapse">
+          <form class="navbar-form navbar-right" method = 'post' action = "blog-ex-login-user.php" role="form">
+            <div class="form-group">
+              <input type="text" placeholder="Username" name = "user" id = "user" class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="password" placeholder="Password" name = "pass" id="pass" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-success">Sign in</button>
+          </form>
+        </div><!--/.navbar-collapse -->
+      </div>
+    </div>
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <div class="container">
+        <h1>Welcome!</h1>
+        <p>Poster is a blogging website.  Click below to sign up.</p>
+        <p><a class="btn btn-primary btn-lg" role="button">Sign Up &raquo;</a></p>
+      </div>
+    </div>
+EOT;
+}
+
+function printNext($user){
+print <<<EOT
+  <div class = "jumbotron">
+  <div class = "container">
+  <h1> Welcome, $user! </h1>
+  <p> Click below to view and update your blog, or to see posts from other users </p>
+</div>
+</div>
+
+    <div class="container">
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="col-md-4">
+          <h2>Your Blog</h2>
+          <p>View your blog and add new posts</p>
+          <p><a class="btn btn-default" href="blog-ex-comment-user.php" role="button">View Blog &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+          <h2>Recent Posts</h2>
+          <p>View the most recent posts from all users</p>
+       <p><a class="btn btn-default" href="viewAllPage.php" role="button">View Recent &raquo;</a></p>
+       </div>
+        <div class="col-md-4">
+          <h2>Search</h2>
+          <p>Search the site to find other users and blog posts</p>
+          <p><a class="btn btn-default" href="searchpage.php" role="button">Search &raquo;</a></p>
+        </div>
+      </div>
+
+      <hr>
+
+      <footer>
+        <p></p>
+      </footer>
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+
+EOT;
+}
+
+
+function printPageTop($title) {
+    print <<<EOT
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    <title>Poster</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="jumbotron.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don''t actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+<body>
+EOT;
+  }
+
+function printBlog($dbh, $user){
+
+print <<<EOT
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    <title>Update Blog</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
+
+					    <!-- Custom styles for this template -->
+    <link href="bootstrap-3.1.1-dist/css/blog.css" rel="stylesheet"> 
+				  
+    <!-- Just for debugging purposes. Don''t actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+				  
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item active" href="#">Blog</a>
+	  <a class = "blog-nav-item" href = "postPage.php">Post</a>
+          <a class="blog-nav-item" href="followersPage.php">Followers</a>
+          <a class="blog-nav-item" href="#">Following</a>
+	<a class = "blog-nav-item" href ="#">Profile</a>
+			      <a class = "blog-nav-item" href = "toHomePage.php">Home</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="blog-header">
+        <h1 class="blog-title">$user</h1>
+        <p class="lead blog-description">Blog description goes here</p>
+      </div>
+
+      <div class="row">
+<div class="col-sm-8 blog-main">
+EOT;
+$profile = '';
+$preparedquery1 = "SELECT profile FROM profile where user = ?";
+$resultset1 = prepared_query($dbh, $preparedquery1, $user);
+while ($row1 = $resultset1 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+  $profile = $row1['profile'];
+}
+  	$preparedquery2 = "SELECT time(entered) as time, user, entry FROM blog_entry where user = ? ORDER BY entered DESC LIMIT 5";
+  	//Get all the blog entries, including, presumably, the one just added, if any
+	$resultset2 = prepared_query($dbh, $preparedquery2, $user);
+ 	 while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+	$user = $row2['user'];
+	$time = $row2['time'];
+	$entry = $row2['entry'];
+    	
+print <<<EOT
+        
+          <div class="blog-post">
+            <h2 class="blog-post-title">Sample blog post</h2>
+            <p class="blog-post-meta">$time by <a href="#">$user</a></p>
+
+            <p> $entry </p> 
+            <hr>
+ 
+
+<!--
+          <ul class="pager">
+            <li><a href="#">Previous</a></li>
+           <li><a href="#">Next</a></li>
+          </ul>
+-->
+</div>
+     
+EOT;
+	 }
+print <<<EOT
+</div><!-- /.blog-main -->  
+        <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+          <div class="sidebar-module sidebar-module-inset">
+            <h4>About</h4>
+            <p>$profile</p>
+          </div>
+          <div class="sidebar-module">
+            <h4>Archives</h4>
+            <ol class="list-unstyled">
+              <li><a href="#">January 2014</a></li>
+              <li><a href="#">December 2013</a></li>
+              <li><a href="#">November 2013</a></li>
+              <li><a href="#">October 2013</a></li>
+              <li><a href="#">September 2013</a></li>
+              <li><a href="#">August 2013</a></li>
+              <li><a href="#">July 2013</a></li>
+              <li><a href="#">June 2013</a></li>
+              <li><a href="#">May 2013</a></li>
+              <li><a href="#">April 2013</a></li>
+              <li><a href="#">March 2013</a></li>
+              <li><a href="#">February 2013</a></li>
+            </ol>
+          </div>
+        
+        </div><!-- /.blog-sidebar -->
+
+      </div><!-- /.row -->
+
+    </div><!-- /.container -->
+
+    <div class="blog-footer">
+      <p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+      <p>
+        <a href="#">Back to top</a>
+      </p>
+    </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <script src="../../assets/js/docs.min.js"></script>
+
+
+EOT;
+}
+
+function printPostPage(){
+
+print <<<EOT
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    <title>Post</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
+
+					    <!-- Custom styles for this template -->
+    <link href="bootstrap-3.1.1-dist/css/blog.css" rel="stylesheet"> 
+				  
+    <!-- Just for debugging purposes. Don''t actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+				  
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a>
+	  <a class = "blog-nav-item active" href = "postPage.php">Post</a>
+          <a class="blog-nav-item" href="followersPage.php">Followers</a>
+          <a class="blog-nav-item" href="#">Following</a>
+	<a class = "blog-nav-item" href ="#">Profile</a>
+			      <a class = "blog-nav-item" href = "toHomePage.php">Home</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="row">
+<div class="col-sm-8 blog-main">
+EOT;
+printCommentForm1();
+}
+function printAllPosts($dbh){
+
+print <<<EOT
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    <title>Recent</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
+
+					    <!-- Custom styles for this template -->
+    <link href="bootstrap-3.1.1-dist/css/blog.css" rel="stylesheet"> 
+				  
+    <!-- Just for debugging purposes. Don''t actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+				  
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+			      <a class = "blog-nav-item" href = "toHomePage.php">Home</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container">
+
+     
+      <div class="row">
+<div class="col-sm-8 blog-main">
+EOT;
+
+  	$resultset2 = $dbh->query("SELECT time(entered) as time, user, entry FROM blog_entry ORDER BY entered DESC LIMIT 20");
+  	//Get all the blog entries, including, presumably, the one just added, if any
+ 	 while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+	$user = $row2['user'];
+	$time = $row2['time'];
+	$entry = $row2['entry'];
+    
+	
+print <<<EOT
+        
+          <div class="blog-post">
+            <h2 class="blog-post-title">Sample blog post</h2>
+            <p class="blog-post-meta">$time by <a href="http://cs.wellesley.edu/~cmatulis/project/toBlog.php?user=$user">$user</a></p>
+
+            <p> $entry </p> 
+            <hr>
+    
+</div>
+     
+EOT;
+	 }
+print <<<EOT
+</div><!-- /.blog-main -->  
+        
+          
+        
+
+
+      </div><!-- /.row -->
+
+    </div><!-- /.container -->
+
+    <div class="blog-footer">
+      <p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+      <p>
+        <a href="#">Back to top</a>
+      </p>
+    </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <script src="../../assets/js/docs.min.js"></script>
+
+
+EOT;
+}
+function showBlog($dbh, $user){
+
+print <<<EOT
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    <title>Update Blog</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
+
+					    <!-- Custom styles for this template -->
+    <link href="bootstrap-3.1.1-dist/css/blog.css" rel="stylesheet"> 
+				  
+    <!-- Just for debugging purposes. Don''t actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+				  
+  </head>
+
+  <body>
+			    
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item active" href="#">Blog</a>
+
+			      <a class = "blog-nav-item" href = "toHomePage.php">Home</a>
+        </nav>
+      </div>
+    </div>
+EOT;
+print <<<EOT
+    <div class="container">
+
+      <div class="blog-header">
+        <h1 class="blog-title">$user</h1>
+        <p class="lead blog-description">Blog description goes here</p>
+      </div>
+
+      <div class="row">
+<div class="col-sm-8 blog-main">
+EOT;
+$profile = '';
+$preparedquery1 = "SELECT profile FROM profile where user = ?";
+$resultset1 = prepared_query($dbh, $preparedquery1, $user);
+while ($row1 = $resultset1 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+  $profile = $row1['profile'];
+}
+
+  	$preparedquery2 = "SELECT time(entered) as time, user, entry FROM blog_entry where user = ? ORDER BY entered DESC LIMIT 5";
+  	//Get all the blog entries, including, presumably, the one just added, if any
+	$resultset2 = prepared_query($dbh, $preparedquery2, $user);
+ 	 while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+	$user = $row2['user'];
+	$time = $row2['time'];
+	$entry = $row2['entry'];
+    
+	
+print <<<EOT
+        
+          <div class="blog-post">
+            <h2 class="blog-post-title">Sample blog post</h2>
+            <p class="blog-post-meta">$time by <a href="#">$user</a></p>
+
+            <p> $entry </p> 
+            <hr>
+ 
+
+</div>
+     
+EOT;
+	 }
+print <<<EOT
+</div><!-- /.blog-main -->  
+        <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+          <div class="sidebar-module sidebar-module-inset">
+            <h4>About</h4>
+            <p>$profile</p>
+          </div>
+          <div class="sidebar-module">
+            <h4>Archives</h4>
+            <ol class="list-unstyled">
+              <li><a href="#">January 2014</a></li>
+              <li><a href="#">December 2013</a></li>
+              <li><a href="#">November 2013</a></li>
+              <li><a href="#">October 2013</a></li>
+              <li><a href="#">September 2013</a></li>
+              <li><a href="#">August 2013</a></li>
+              <li><a href="#">July 2013</a></li>
+              <li><a href="#">June 2013</a></li>
+              <li><a href="#">May 2013</a></li>
+              <li><a href="#">April 2013</a></li>
+              <li><a href="#">March 2013</a></li>
+              <li><a href="#">February 2013</a></li>
+            </ol>
+          </div>
+        
+        </div><!-- /.blog-sidebar -->
+
+      </div><!-- /.row -->
+
+    </div><!-- /.container -->
+
+    <div class="blog-footer">
+      <p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+      <p>
+        <a href="#">Back to top</a>
+      </p>
+    </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <script src="../../assets/js/docs.min.js"></script>
+
+
+EOT;
+}
+
+function printFollowersPage($dbh, $user){
+print <<<EOT
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    <title>Followers</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
+
+					    <!-- Custom styles for this template -->
+    <link href="bootstrap-3.1.1-dist/css/blog.css" rel="stylesheet"> 
+				  
+    <!-- Just for debugging purposes. Don''t actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+				  
+  </head>
+
+  <body>
+			    
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a>
+	  <a class = "blog-nav-item" href = "postPage.php">Post</a>
+          <a class="blog-nav-item active" href="#">Followers</a>
+          <a class="blog-nav-item" href="followingPage.php">Following</a>
+	<a class = "blog-nav-item" href ="#">Profile</a>
+			      <a class = "blog-nav-item" href = "toHomePage.php">Home</a>
+        </nav>
+      </div>
+    </div>
+
+EOT;
+print <<<EOT
+    <div class="container">
+
+      <div class="blog-header">
+        <h1 class="blog-title">$user</h1>
+        <p class="lead blog-description">Here are the users that are following you.</p>
+      </div>
+
+      <div class="row">
+<div class="col-sm-8 blog-main">
+EOT;
+$profile = '';
+$preparedquery1 = "SELECT profile FROM profile where user = ?";
+$resultset1 = prepared_query($dbh, $preparedquery1, $user);
+while ($row1 = $resultset1 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+  $profile = $row1['profile'];
+}
+//echo "<P> Here are the five most recent postings within the last hour:";
+  	$preparedquery2 = "SELECT user FROM follows where following = ?";
+  	//Get all the blog entries, including, presumably, the one just added, if any
+	$resultset2 = prepared_query($dbh, $preparedquery2, $user);
+ 	 while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+	$follower = $row2['user'];
+    	
+	
+print <<<EOT
+        
+          <div class="blog-post">
+            <p class="blog-post-meta"><a href="http://cs.wellesley.edu/~cmatulis/project/toBlog.php?user=$follower">$follower</a></p>
+
+            
+            <hr>
+ 
+
+</div>
+     
+EOT;
+	 }
+print <<<EOT
+</div><!-- /.blog-main -->  
+        
+
+    </div><!-- /.container -->
+
+    <div class="blog-footer">
+      <p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+      <p>
+        <a href="#">Back to top</a>
+      </p>
+    </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <script src="../../assets/js/docs.min.js"></script>
+
+
+EOT;
+
+}
+function printFollowingPage($dbh, $user){
+print <<<EOT
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    <title>Followers</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
+
+					    <!-- Custom styles for this template -->
+    <link href="bootstrap-3.1.1-dist/css/blog.css" rel="stylesheet"> 
+				  
+    <!-- Just for debugging purposes. Don''t actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+				  
+  </head>
+
+  <body>
+			    
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a>
+	  <a class = "blog-nav-item" href = "postPage.php">Post</a>
+          <a class="blog-nav-item" href="followersPage.php">Followers</a>
+          <a class="blog-nav-item active" href="#">Following</a>
+	<a class = "blog-nav-item" href ="#">Profile</a>
+			      <a class = "blog-nav-item" href = "toHomePage.php">Home</a>
+        </nav>
+      </div>
+    </div>
+
+EOT;
+print <<<EOT
+    <div class="container">
+
+      <div class="blog-header">
+        <h1 class="blog-title">$user</h1>
+        <p class="lead blog-description">Here are the users that you are following.</p>
+      </div>
+
+      <div class="row">
+<div class="col-sm-8 blog-main">
+EOT;
+$profile = '';
+$preparedquery1 = "SELECT profile FROM profile where user = ?";
+$resultset1 = prepared_query($dbh, $preparedquery1, $user);
+while ($row1 = $resultset1 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+  $profile = $row1['profile'];
+}
+//echo "<P> Here are the five most recent postings within the last hour:";
+  	$preparedquery2 = "SELECT following FROM follows where user = ?";
+  	//Get all the blog entries, including, presumably, the one just added, if any
+	$resultset2 = prepared_query($dbh, $preparedquery2, $user);
+ 	 while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+	$following = $row2['user'];
+    	
+	
+print <<<EOT
+        
+          <div class="blog-post">
+            <p class="blog-post-meta"><a href="http://cs.wellesley.edu/~cmatulis/project/toBlog.php?user=$following">$follower</a></p>
+
+            
+            <hr>
+ 
+
+</div>
+     
+EOT;
+	 }
+print <<<EOT
+</div><!-- /.blog-main -->  
+        
+
+    </div><!-- /.container -->
+
+    <div class="blog-footer">
+      <p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+      <p>
+        <a href="#">Back to top</a>
+      </p>
+    </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <script src="../../assets/js/docs.min.js"></script>
+
+
+EOT;
+
+}
+
+
+?>
