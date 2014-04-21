@@ -247,7 +247,7 @@ print <<<EOT
     <meta name="author" content="">
     <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
-    <title>Update Blog</title>
+    <title>Blog</title>
 
     <!-- Bootstrap core CSS -->
     <link href="bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
@@ -559,7 +559,7 @@ print <<<EOT
     <meta name="author" content="">
     <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
-    <title>Update Blog</title>
+    <title>Blog</title>
 
     <!-- Bootstrap core CSS -->
     <link href="bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
@@ -804,7 +804,7 @@ print <<<EOT
     <meta name="author" content="">
     <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
-    <title>Followers</title>
+    <title>Following</title>
 
     <!-- Bootstrap core CSS -->
     <link href="bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
