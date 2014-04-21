@@ -13,8 +13,7 @@ $thecookie = $_COOKIE['304bloguserphp'];
 $result = ($user == $thecookie);
 if ($result == 1){
   printBlog($dbh, $user);
-	$msg = "User is $user and cookie is $thecookie and result is $result";
-print $msg;
+	
     }
 else{
 showBlog($dbh, $user);

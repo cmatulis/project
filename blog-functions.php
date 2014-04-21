@@ -2,9 +2,9 @@
   // Database operations
 
 
-function insertPost($dbh, $poster, $entry){
-  $insert = "INSERT INTO blog_entry(user, entry) VALUES (?, ?)";
-  $rows = prepared_statement($dbh, $insert, array($poster, $entry));
+function insertPost($dbh, $poster, $entry, $title){
+  $insert = "INSERT INTO blog_entry(user, entry, title) VALUES (?, ?, ?)";
+  $rows = prepared_statement($dbh, $insert, array($poster, $entry, $title));
   }
 
 function printPostings($dbh){
@@ -51,7 +51,7 @@ function printCommentForm1()
           <div class="control-group">  
             <label class="control-label" for="input01">Title</label>  
             <div class="controls">  
-              <input type="text" class="input-xlarge" id="input01">   
+              <input type="text" class="input-xlarge" name="postTitle" id="postTitle">   
             </div>  
           </div>  
           <div class="control-group">  
@@ -101,7 +101,6 @@ function printUploadForm()
           </div>  
           <div class="form-actions">  
             <button type="submit" class="btn btn-primary">Post</button>  
-            <button class="btn">Cancel</button>  
           </div>  
         </fieldset>  
 </form>  
@@ -293,18 +292,19 @@ $resultset1 = prepared_query($dbh, $preparedquery1, $user);
 while ($row1 = $resultset1 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
   $profile = $row1['profile'];
 }
-  	$preparedquery2 = "SELECT time(entered) as time, user, entry FROM blog_entry where user = ? ORDER BY entered DESC LIMIT 5";
+  	$preparedquery2 = "SELECT time(entered) as time, user, entry, title FROM blog_entry where user = ? ORDER BY entered DESC LIMIT 5";
   	//Get all the blog entries, including, presumably, the one just added, if any
 	$resultset2 = prepared_query($dbh, $preparedquery2, $user);
  	 while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
 	$user = $row2['user'];
 	$time = $row2['time'];
 	$entry = $row2['entry'];
+	$title = $row2['title'];
     	
 print <<<EOT
         
           <div class="blog-post">
-            <h2 class="blog-post-title">Sample blog post</h2>
+            <h2 class="blog-post-title">$title</h2>
             <p class="blog-post-meta">$time by <a href="#">$user</a></p>
 
             <p> $entry </p> 
@@ -485,20 +485,24 @@ print <<<EOT
      
       <div class="row">
 <div class="col-sm-8 blog-main">
+ <div class="blog-header">
+        <p class="lead blog-description">The most recent posts from all users.</p>
+      </div>
 EOT;
 
-  	$resultset2 = $dbh->query("SELECT time(entered) as time, user, entry FROM blog_entry ORDER BY entered DESC LIMIT 20");
+  	$resultset2 = $dbh->query("SELECT time(entered) as time, user, entry, title FROM blog_entry ORDER BY entered DESC LIMIT 20");
   	//Get all the blog entries, including, presumably, the one just added, if any
  	 while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
 	$user = $row2['user'];
 	$time = $row2['time'];
 	$entry = $row2['entry'];
+	$title = $row2['title'];
     
 	
 print <<<EOT
         
           <div class="blog-post">
-            <h2 class="blog-post-title">Sample blog post</h2>
+            <h2 class="blog-post-title">$title</h2>
             <p class="blog-post-meta">$time by <a href="http://cs.wellesley.edu/~cmatulis/project/toBlog.php?user=$user">$user</a></p>
 
             <p> $entry </p> 
@@ -599,19 +603,20 @@ while ($row1 = $resultset1 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
   $profile = $row1['profile'];
 }
 
-  	$preparedquery2 = "SELECT time(entered) as time, user, entry FROM blog_entry where user = ? ORDER BY entered DESC LIMIT 5";
+  	$preparedquery2 = "SELECT time(entered) as time, user, entry, title FROM blog_entry where user = ? ORDER BY entered DESC LIMIT 5";
   	//Get all the blog entries, including, presumably, the one just added, if any
 	$resultset2 = prepared_query($dbh, $preparedquery2, $user);
  	 while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
 	$user = $row2['user'];
 	$time = $row2['time'];
 	$entry = $row2['entry'];
+	$title = $row2['title'];
     
 	
 print <<<EOT
         
           <div class="blog-post">
-            <h2 class="blog-post-title">Sample blog post</h2>
+            <h2 class="blog-post-title">$title</h2>
             <p class="blog-post-meta">$time by <a href="#">$user</a></p>
 
             <p> $entry </p> 

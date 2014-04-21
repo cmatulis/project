@@ -22,7 +22,7 @@ printUploadForm();
 }
 
 if(isset($_POST['new_entry'])) {
-    insertPost($dbh,$poster,$_POST['new_entry']);
+    insertPost($dbh,$poster,$_POST['new_entry'], $_POST['postTitle']);
 }
 
 
