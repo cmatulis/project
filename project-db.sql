@@ -31,7 +31,7 @@ create table blog_entry(
        entered timestamp,
        user varchar(30),
        entry text,
-       entry_id varchar(30) primary key,
+       entry_id int not null auto_increment primary key,
        INDEX (entry_id),
        foreign key (user) references blog_user(user))
        TYPE = InnoDB;
@@ -52,7 +52,7 @@ create table follows(
        TYPE = InnoDB;
 
 create table comments(
-       entry_id varchar(30),
+       entry_id int,
        commenting_user varchar(30),
        comment_time timestamp,
        comment_text text,
@@ -60,7 +60,7 @@ create table comments(
 	TYPE = InnoDB;
 
 create table likes(
-       entry_id varchar(30),
+       entry_id int,
        liking_user varchar(30),
        like_time timestamp,
        foreign key (entry_id) references blog_entry(entry_id))
