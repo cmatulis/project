@@ -84,7 +84,7 @@ function printUploadForm()
   <input type="submit" value="submit">
 </form>
 -->
-<form class="form-horizontal" method="post" action = "postPage.php?type=">  
+<form class="form-horizontal" method="post" enctype = "multipart/form-data" action = "postPage.php?type=">  
         <fieldset>  
           <div class="control-group">  
             <label class="control-label" for="input01">Title</label>  
@@ -297,21 +297,22 @@ $resultset1 = prepared_query($dbh, $preparedquery1, $user);
 while ($row1 = $resultset1 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
   $profile = $row1['profile'];
 }
-  	$preparedquery2 = "SELECT time(entered) as time, user, caption, title FROM blog_entry where user = ? ORDER BY entered DESC LIMIT 5";
+  	$preparedquery2 = "SELECT * from blog_entry union all select * from image_posts where user = ? order by time(entered) desc";
   	//Get all the blog entries, including, presumably, the one just added, if any
 	$resultset2 = prepared_query($dbh, $preparedquery2, $user);
  	 while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-	$user = $row2['user'];
-	$time = $row2['time'];
+	$usercol = $row2['user'];
+	$time = $row2['entered'];
+	$image = $row2['entry'];
 	$entry = $row2['caption'];
 	$title = $row2['title'];
-    	
+    	if (!strcmp($usercol, $user)){  
 print <<<EOT
         
           <div class="blog-post">
             <h2 class="blog-post-title">$title</h2>
             <p class="blog-post-meta">$time by <a href="#">$user</a></p>
-
+		<p> <img src='http://cs.wellesley.edu/~cmatulis/project/images/123.png'> </p>
             <p> $entry </p> 
             <hr>
  
@@ -326,6 +327,7 @@ print <<<EOT
      
 EOT;
 	 }
+}
 print <<<EOT
 </div><!-- /.blog-main -->  
         <div class="col-sm-3 col-sm-offset-1 blog-sidebar">

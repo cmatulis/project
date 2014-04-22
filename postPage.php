@@ -25,9 +25,20 @@ if(isset($_POST['new_entry'])) {
     insertPost($dbh,$poster,$_POST['new_entry'], $_POST['postTitle']);
 }
 
-if(isset($_POST['fileInput'])){
-	insertUpload($dbh, $poster, $_POST['fileInput'], $_POST['uploadTitle'], $_POST['image_caption']);
+if(isset($_POST['uploadTitle'])){
+	$tmp = $_FILES['fileInput']['tmp_name'];
+	$destdir = '/students/cmatulis/public_html/project/images/';
+	$destfilename = "123.png";
+	$destfile = $destdir . $destfilename;
+	if (move_uploaded_file($tmp, $destfile)){
+	insertUpload($dbh, $poster, $destfile, $_POST['uploadTitle'], $_POST['image_caption']);
+	}
+	else {
+	$cwd = getcwd();
+	print "<p> cwd is $cwd";
+	}
 }
+
 
 ?>
 </body>

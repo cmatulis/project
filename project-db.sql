@@ -32,7 +32,7 @@ create table blog_entry(
        entered timestamp,
        user varchar(30),
        title text,
-       entry text,
+       entry blob,
        caption text,
        entry_id int not null auto_increment primary key,
        INDEX (entry_id),
