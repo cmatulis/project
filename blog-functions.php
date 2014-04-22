@@ -3,13 +3,13 @@
 
 
 function insertPost($dbh, $poster, $entry, $title){
-  $insert = "INSERT INTO blog_entry(user, entry, title) VALUES (?, ?, ?)";
+  $insert = "INSERT INTO blog_entry(user, caption, title) VALUES (?, ?, ?)";
   $rows = prepared_statement($dbh, $insert, array($poster, $entry, $title));
   }
 
 function insertUpload($dbh, $poster, $upload, $title, $caption){
-  $insert = "INSERT INTO image_posts(user, image, title, caption) VALUES (?, ?, ?, ?)";
-  $rows = prepared_statement($dbh, $insert, array($poster, $upload, $caption, $title));
+  $insert = "INSERT INTO image_posts(user, entry, title, caption) VALUES (?, ?, ?, ?)";
+  $rows = prepared_statement($dbh, $insert, array($poster, $upload, $title, $caption));
   }
 
 function printPostings($dbh){
@@ -297,13 +297,13 @@ $resultset1 = prepared_query($dbh, $preparedquery1, $user);
 while ($row1 = $resultset1 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
   $profile = $row1['profile'];
 }
-  	$preparedquery2 = "SELECT time(entered) as time, user, entry, title FROM blog_entry where user = ? ORDER BY entered DESC LIMIT 5";
+  	$preparedquery2 = "SELECT time(entered) as time, user, caption, title FROM blog_entry where user = ? ORDER BY entered DESC LIMIT 5";
   	//Get all the blog entries, including, presumably, the one just added, if any
 	$resultset2 = prepared_query($dbh, $preparedquery2, $user);
  	 while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
 	$user = $row2['user'];
 	$time = $row2['time'];
-	$entry = $row2['entry'];
+	$entry = $row2['caption'];
 	$title = $row2['title'];
     	
 print <<<EOT
@@ -495,12 +495,12 @@ print <<<EOT
       </div>
 EOT;
 
-  	$resultset2 = $dbh->query("SELECT time(entered) as time, user, entry, title FROM blog_entry ORDER BY entered DESC LIMIT 20");
+  	$resultset2 = $dbh->query("SELECT time(entered) as time, user, caption, title FROM blog_entry ORDER BY entered DESC LIMIT 20");
   	//Get all the blog entries, including, presumably, the one just added, if any
  	 while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
 	$user = $row2['user'];
 	$time = $row2['time'];
-	$entry = $row2['entry'];
+	$entry = $row2['caption'];
 	$title = $row2['title'];
     
 	
@@ -608,13 +608,13 @@ while ($row1 = $resultset1 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
   $profile = $row1['profile'];
 }
 
-  	$preparedquery2 = "SELECT time(entered) as time, user, entry, title FROM blog_entry where user = ? ORDER BY entered DESC LIMIT 5";
+  	$preparedquery2 = "SELECT time(entered) as time, user, caption, title FROM blog_entry where user = ? ORDER BY entered DESC LIMIT 5";
   	//Get all the blog entries, including, presumably, the one just added, if any
 	$resultset2 = prepared_query($dbh, $preparedquery2, $user);
  	 while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
 	$user = $row2['user'];
 	$time = $row2['time'];
-	$entry = $row2['entry'];
+	$entry = $row2['caption'];
 	$title = $row2['title'];
     
 	

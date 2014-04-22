@@ -33,6 +33,7 @@ create table blog_entry(
        user varchar(30),
        title text,
        entry text,
+       caption text,
        entry_id int not null auto_increment primary key,
        INDEX (entry_id),
        foreign key (user) references blog_user(user))
@@ -42,7 +43,7 @@ create table image_posts(
        entered timestamp,
        user varchar(30),
        title text,
-       image blob,
+       entry blob,
        caption text,
        image_id int not null auto_increment primary key,
        INDEX (image_id),
