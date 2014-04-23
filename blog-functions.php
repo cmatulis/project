@@ -945,8 +945,7 @@ function printSignupPage(){
         <input type="username" name="username" class="form-control" placeholder="Username" required autofocus>
         <input type="email" name="email" class="form-control" placeholder="Email address" required>
         <input type="password" name="password" class="form-control" placeholder="Password" required>
-        <p><button type="submit" name="submit" href="signUpSuccess.php" class="btn btn-lg btn-primary btn-block">Sign up</button><p>
-        
+        <p><button type="submit" name="submit" class="btn btn-lg btn-primary btn-block">Sign up</button><p>     
       </form>
     </div> <!-- /container -->
  

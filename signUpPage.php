@@ -20,6 +20,8 @@ if (isset ($_POST['username']) && isset($_POST['password'])) {
 	$email_check = query($dbh,"SELECT email from blog_user WHERE email='$email'");
 	$do_emailcheck = $email_check -> numRows();
 
+	echo '<div class="container"><center>';
+   
 	if ($do_usercheck > 0) {
 		echo "<p> Username is already in use!"; 
 	} if ($do_emailcheck > 0) {
@@ -28,9 +30,10 @@ if (isset ($_POST['username']) && isset($_POST['password'])) {
 		$query = "INSERT into blog_user VALUES ('$username','$password',password('$password'),'$email')";
 		$resultset = query($dbh,$query);
 		if ($resultset) {
-			echo "<p> You are now registered";
+			echo "<p> You are now registered.";
 		}
 	}
+	echo "</center></div>";
 }
 ?>
 </body>
