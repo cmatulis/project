@@ -3,7 +3,7 @@
 
 
 function insertPost($dbh, $poster, $entry, $title){
-  $insert = "INSERT INTO blog_entry(user, caption, title) VALUES (?, ?, ?)";
+  $insert = "INSERT INTO blog_entry(user, entry, title) VALUES (?, ?, ?)";
   $rows = prepared_statement($dbh, $insert, array($poster, $entry, $title));
   }
 
