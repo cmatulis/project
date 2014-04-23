@@ -22,7 +22,7 @@ if (isset ($_POST['username']) && isset($_POST['password'])) {
 
 	if ($do_usercheck > 0) {
 		echo "<p> Username is already in use!"; 
-	} if ($do_emailcheck > 1) {
+	} if ($do_emailcheck > 0) {
 		echo "<p> Email is already in use!"; 
 	} if (($do_usercheck == 0) && ($do_emailcheck ==0)) {
 		$query = "INSERT into blog_user VALUES ('$username','$password',password('$password'),'$email')";
