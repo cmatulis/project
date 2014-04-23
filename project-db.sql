@@ -11,6 +11,7 @@ create table blog_user(
     user varchar(30) primary key,
     pass varchar(30),
     cryp char(41),
+    email varchar(50),
     INDEX (user)
 )
 TYPE = InnoDB;
