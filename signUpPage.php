@@ -31,7 +31,6 @@ if (isset ($_POST['username']) && isset($_POST['password'])) {
 			echo "<p> You are now registered";
 		}
 	}
-
 }
 ?>
 </body>

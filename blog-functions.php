@@ -940,7 +940,7 @@ function printSignupPage(){
   <body>
 
     <div class="container">
-      <form class="form-signin" method ="post" action = "signUpPage.php" role="form>
+      <form class="form-signin" role="form" method ="post" action = "signUpPage.php" method>
         <h2 class="form-signin-heading">Sign Up</h2>
         <input type="username" name="username" class="form-control" placeholder="Username" required autofocus>
         <input type="email" name="email" class="form-control" placeholder="Email address" required>
