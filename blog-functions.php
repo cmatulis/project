@@ -3,12 +3,12 @@
 
 
 function insertPost($dbh, $poster, $entry, $title){
-  $insert = "INSERT INTO blog_entry(user, entry, title) VALUES (?, ?, ?)";
+  $insert = "INSERT INTO blog_entry(user, caption, title) VALUES (?, ?, ?)";
   $rows = prepared_statement($dbh, $insert, array($poster, $entry, $title));
   }
 
 function insertUpload($dbh, $poster, $upload, $title, $caption){
-  $insert = "INSERT INTO image_posts(user, entry, title, caption) VALUES (?, ?, ?, ?)";
+  $insert = "INSERT INTO blog_entry(user, entry, title, caption) VALUES (?, ?, ?, ?)";
   $rows = prepared_statement($dbh, $insert, array($poster, $upload, $title, $caption));
   }
 
@@ -272,14 +272,11 @@ print <<<EOT
       <div class="container">
         <nav class="blog-nav">
           <a class="blog-nav-item active" href="#">Blog</a>
-	        <a class = "blog-nav-item" href = "postPage.php?type=">Post</a>
+	  <a class = "blog-nav-item" href = "postPage.php?type=">Post</a>
           <a class="blog-nav-item" href="followersPage.php">Followers</a>
-          <a class="blog-nav-item" href="#">Following</a>
-	        <a class = "blog-nav-item" href ="#">Profile</a>
-			   <a class = "blog-nav-item" href = "toHomePage.php">Home</a>
-         <form class="navbar-search pull-left">
-           <input type="text" class="search-query" placeholder="Search">
-          </form>
+          <a class="blog-nav-item" href="followingPage.php">Following</a>
+	<a class = "blog-nav-item" href ="#">Profile</a>
+			      <a class = "blog-nav-item" href = "toHomePage.php">Home</a>
         </nav>
       </div>
     </div>
@@ -300,7 +297,7 @@ $resultset1 = prepared_query($dbh, $preparedquery1, $user);
 while ($row1 = $resultset1 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
   $profile = $row1['profile'];
 }
-  	$preparedquery2 = "SELECT * from blog_entry union all select * from image_posts where user = ? order by time(entered) desc";
+  	$preparedquery2 = "SELECT * from blog_entry where user = ? order by time(entered) desc";
   	//Get all the blog entries, including, presumably, the one just added, if any
 	$resultset2 = prepared_query($dbh, $preparedquery2, $user);
  	 while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
@@ -500,7 +497,7 @@ print <<<EOT
       </div>
 EOT;
 
-  	$resultset2 = $dbh->query("SELECT * from blog_entry union all select * from image_posts ORDER BY entered DESC LIMIT 20");
+  	$resultset2 = $dbh->query("SELECT * from blog_entry ORDER BY entered DESC LIMIT 20");
   	//Get all the blog entries, including, presumably, the one just added, if any
  	 while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
 	$user = $row2['user'];
@@ -614,7 +611,7 @@ while ($row1 = $resultset1 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
   $profile = $row1['profile'];
 }
 
-  	$preparedquery2 = "SELECT * from blog_entry union all select * from image_posts where user = ? order by time(entered) desc";
+  	$preparedquery2 = "SELECT * from blog_entry where user = ? order by time(entered) desc";
   	//Get all the blog entries, including, presumably, the one just added, if any
 	$resultset2 = prepared_query($dbh, $preparedquery2, $user);
  	 while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
@@ -629,7 +626,7 @@ print <<<EOT
         
           <div class="blog-post">
             <h2 class="blog-post-title">$title</h2>
-            <p class="blog-post-meta">$time by <a href="#">$user</a></p>
+            <p class="blog-post-meta">$time by <a href="#">$usercol</a></p>
   <p> <img src = '$image'> </p>
             <p> $entry </p> 
             <hr>
@@ -711,6 +708,7 @@ print <<<EOT
 				  
     <!-- Just for debugging purposes. Don''t actually copy this line! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -868,13 +866,13 @@ while ($row1 = $resultset1 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
   	//Get all the blog entries, including, presumably, the one just added, if any
 	$resultset2 = prepared_query($dbh, $preparedquery2, $user);
  	 while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-	$following = $row2['user'];
+	$following = $row2['following'];
     	
 	
 print <<<EOT
         
           <div class="blog-post">
-            <p class="blog-post-meta"><a href="http://cs.wellesley.edu/~cmatulis/project/toBlog.php?user=$following">$follower</a></p>
+            <p class="blog-post-meta"><a href="http://cs.wellesley.edu/~cmatulis/project/toBlog.php?user=$following">$following</a></p>
 
             
             <hr>
@@ -1011,5 +1009,4 @@ function printSearchPage() {
 EOT;
 
 }
-
 ?>

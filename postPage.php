@@ -38,9 +38,9 @@ if(isset($_POST['new_entry'])) {
 if(isset($_POST['uploadTitle'])){
 	$tmp = $_FILES['fileInput']['tmp_name'];
 	$destdir = '/students/cmatulis/public_html/project/images/';
-	$resultset = $dbh->query("select image_id from image_posts order by image_id desc limit 1");
+	$resultset = $dbh->query("select entry_id from blog_entry order by entry_id desc limit 1");
 	while ($row = $resultset -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-	$postNum = $row['image_id'] + 1;
+	$postNum = $row['entry_id'] + 1;
 	}
 	$destfilename = "$postNum";
 	//$destfilename = $tmp;
