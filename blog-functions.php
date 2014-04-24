@@ -1,7 +1,6 @@
 <?php
   // Database operations
 
-
 function insertPost($dbh, $poster, $entry, $title){
   $insert = "INSERT INTO blog_entry(user, caption, title) VALUES (?, ?, ?)";
   $rows = prepared_statement($dbh, $insert, array($poster, $entry, $title));
@@ -23,10 +22,6 @@ function printPostings($dbh){
   echo "</dl>\n";
 }
 
-
-
-
-
 function loginCredentialsAreOkay($dbh, $username, $password){
   $check = "SELECT count(*) AS n FROM blog_user WHERE user = ? AND pass=?";
     $resultset = prepared_query($dbh, $check, array($username,$password));
@@ -38,85 +33,79 @@ function loginCredentialsAreOkay($dbh, $username, $password){
 // printing stuff
 
 // This function prints a one-input form:  just the comment box
-
-function printCommentForm1()
-{
+function printCommentForm1() {
     //$script = 'blog-ex-comment-user.php';
-    print <<<EOT
+print <<<EOT
 <!--
 <form method="post" action="postPage.php?type=">
-   <label for="new_entry">Content</label> <br>
+  <label for="new_entry">Content</label> <br>
   <textarea name="new_entry" id="new_entry" rows=5 cols=60></textarea><br>
   <input type="submit" value="submit">
 </form>
 -->
 <form class="form-horizontal" method="post" action = "postPage.php?type=">  
-        <fieldset>  
-          
-          <div class="control-group">  
-            <label class="control-label" for="input01">Title</label>  
-            <div class="controls">  
-              <input type="text" class="input-xlarge" name="postTitle" id="postTitle">   
-            </div>  
+  <fieldset>    
+    <div class="control-group">  
+        <label class="control-label" for="input01">Title</label>  
+          <div class="controls">  
+            <input type="text" class="input-xlarge" name="postTitle" id="postTitle">   
           </div>  
-          <div class="control-group">  
-            <label class="control-label" for="textarea">Text Contents</label>  
-            <div class="controls">  
-              <textarea class="input-xlarge" name="new_entry" id="new_entry" rows="5" cols="60"></textarea>  
-            </div>  
+    </div>  
+    <div class="control-group">  
+      <label class="control-label" for="textarea">Text Contents</label>  
+          <div class="controls">  
+          <textarea class="input-xlarge" name="new_entry" id="new_entry" rows="5" cols="60"></textarea>  
           </div>  
-          <div class="form-actions">  
-            <button type="submit" class="btn btn-primary">Post</button>  
-          </div>  
-        </fieldset>  
+    </div>  
+    <div class="form-actions">  
+      <button type="submit" class="btn btn-primary">Post</button>  
+    </div>  
+  </fieldset>  
 </form>  
 EOT;
 }
 
-function printUploadForm()
-{
+function printUploadForm() {
     //$script = 'blog-ex-comment-user.php';
-    print <<<EOT
+  print <<<EOT
 <!--
 <form method="post" action="postPage.php?type=">
-   <label for="new_entry">Content</label> <br>
+  <label for="new_entry">Content</label> <br>
   <textarea name="new_entry" id="new_entry" rows=5 cols=60></textarea><br>
   <input type="submit" value="submit">
 </form>
 -->
 <form class="form-horizontal" method="post" enctype = "multipart/form-data" action = "postPage.php?type=">  
-        <fieldset>  
-          <div class="control-group">  
-            <label class="control-label" for="input01">Title</label>  
-            <div class="controls">  
-              <input type="text" class="input-xlarge" name = "uploadTitle" id="uploadTitle">  
-            </div>  
-          </div>  
-          <div class="control-group">  
-            <label class="control-label" for="fileInput">Select file to Upload</label>  
-            <div class="controls">  
-              <input class="input-file" name = "fileInput" id="fileInput" type="file">  
-            </div>  
-          </div>  
-          <div class="control-group">  
-            <label class="control-label" for="textarea">Caption</label>  
-            <div class="controls">  
-              <textarea class="input-xlarge" name = "image_caption" id="image_caption" rows="3" cols = "60"></textarea>  
-            </div>  
-          </div>  
-          <div class="form-actions">  
-            <button type="submit" class="btn btn-primary">Post</button>  
-          </div>  
-        </fieldset>  
+  <fieldset>  
+    <div class="control-group">  
+      <label class="control-label" for="input01">Title</label>  
+      <div class="controls">  
+          <input type="text" class="input-xlarge" name = "uploadTitle" id="uploadTitle">  
+      </div>  
+    </div>  
+    <div class="control-group">  
+      <label class="control-label" for="fileInput">Select file to Upload</label>  
+      <div class="controls">  
+          <input class="input-file" name = "fileInput" id="fileInput" type="file">  
+      </div>  
+    </div>  
+    <div class="control-group">  
+      <label class="control-label" for="textarea">Caption</label>  
+      <div class="controls">  
+        <textarea class="input-xlarge" name = "image_caption" id="image_caption" rows="3" cols = "60"></textarea>  
+      </div>  
+    </div>  
+    <div class="form-actions">  
+      <button type="submit" class="btn btn-primary">Post</button>  
+    </div>  
+  </fieldset>  
 </form>  
 EOT;
 }
 
 // This function prints a two-input form:  the poster box and the comment box
-
-
 function printPageHeader() {
-    print <<<EOT
+print <<<EOT
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
         <div class="navbar-header">
@@ -129,7 +118,6 @@ function printPageHeader() {
           <a class="navbar-brand" href="#">Poster</a>
         </div>
       
-
         <div class="navbar-collapse collapse">
           <form class="navbar-form navbar-right" method = 'post' action = "blog-ex-login-user.php" role="form">
             <div class="form-group">
@@ -154,41 +142,41 @@ function printPageHeader() {
 EOT;
 }
 
-function printNext($user){
+function printNext($user) {
 print <<<EOT
   <div class = "jumbotron">
-  <div class = "container">
-  <h1> Welcome, $user! </h1>
-  <p> Click below to view and update your blog, or to see posts from other users </p>
-</div>
-</div>
+    <div class = "container">
+      <h1> Welcome, $user! </h1>
+      <p> Click below to view and update your blog, or to see posts from other users </p>
+    </div>
+  </div>
 
-    <div class="container">
-      <!-- Example row of columns -->
-      <div class="row">
-        <div class="col-md-4">
-          <h2>Your Blog</h2>
+  <div class="container">
+    <!-- Example row of columns -->
+    <div class="row">
+      <div class="col-md-4">
+        <h2>Your Blog</h2>
           <p>View your blog and add new posts</p>
           <p><a class="btn btn-default" href="blog-ex-comment-user.php" role="button">View Blog &raquo;</a></p>
-        </div>
-        <div class="col-md-4">
-          <h2>Recent Posts</h2>
-          <p>View the most recent posts from all users</p>
-       <p><a class="btn btn-default" href="viewAllPage.php" role="button">View Recent &raquo;</a></p>
-       </div>
-        <div class="col-md-4">
-          <h2>Search</h2>
-          <p>Search the site to find other users and blog posts</p>
-          <p><a class="btn btn-default" href="searchpage.php" role="button">Search &raquo;</a></p>
-        </div>
       </div>
+      <div class="col-md-4">
+        <h2>Recent Posts</h2>
+        <p>View the most recent posts from all users</p>
+        <p><a class="btn btn-default" href="viewAllPage.php" role="button">View Recent &raquo;</a></p>
+      </div>
+      <div class="col-md-4">
+        <h2>Search</h2>
+        <p>Search the site to find other users and blog posts</p>
+        <p><a class="btn btn-default" href="searchpage.php" role="button">Search &raquo;</a></p>
+      </div>
+    </div>
 
       <hr>
 
       <footer>
         <p></p>
       </footer>
-    </div> <!-- /container -->
+  </div> <!-- /container -->
 
 
     <!-- Bootstrap core JavaScript
@@ -232,7 +220,7 @@ function printPageTop($title) {
   </head>
 <body>
 EOT;
-  }
+}
 
 function printBlog($dbh, $user){
 
@@ -252,7 +240,7 @@ print <<<EOT
     <!-- Bootstrap core CSS -->
     <link href="bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
 
-					    <!-- Custom styles for this template -->
+		<!-- Custom styles for this template -->
     <link href="bootstrap-3.1.1-dist/css/blog.css" rel="stylesheet"> 
 				  
     <!-- Just for debugging purposes. Don''t actually copy this line! -->
@@ -272,62 +260,60 @@ print <<<EOT
       <div class="container">
         <nav class="blog-nav">
           <a class="blog-nav-item active" href="#">Blog</a>
-	  <a class = "blog-nav-item" href = "postPage.php?type=">Post</a>
+	        <a class = "blog-nav-item" href = "postPage.php?type=">Post</a>
           <a class="blog-nav-item" href="followersPage.php">Followers</a>
           <a class="blog-nav-item" href="followingPage.php">Following</a>
-	<a class = "blog-nav-item" href ="#">Profile</a>
-			      <a class = "blog-nav-item" href = "toHomePage.php">Home</a>
+	        <a class = "blog-nav-item" href ="#">Profile</a>
+			    <a class = "blog-nav-item" href = "toHomePage.php">Home</a>
         </nav>
       </div>
     </div>
 
     <div class="container">
-
       <div class="blog-header">
         <h1 class="blog-title">$user</h1>
         <p class="lead blog-description">Blog description goes here</p>
       </div>
-
       <div class="row">
-<div class="col-sm-8 blog-main">
+      <div class="col-sm-8 blog-main">
 EOT;
-$profile = '';
-$preparedquery1 = "SELECT profile FROM profile where user = ?";
-$resultset1 = prepared_query($dbh, $preparedquery1, $user);
-while ($row1 = $resultset1 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-  $profile = $row1['profile'];
-}
-  	$preparedquery2 = "SELECT * from blog_entry where user = ? order by time(entered) desc";
-  	//Get all the blog entries, including, presumably, the one just added, if any
+
+  $profile = '';
+  $preparedquery1 = "SELECT profile FROM profile where user = ?";
+  $resultset1 = prepared_query($dbh, $preparedquery1, $user);
+  while ($row1 = $resultset1 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+    $profile = $row1['profile'];
+  }
+  $preparedquery2 = "SELECT * from blog_entry where user = ? order by time(entered) desc";
+  //Get all the blog entries, including, presumably, the one just added, if any
 	$resultset2 = prepared_query($dbh, $preparedquery2, $user);
- 	 while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-	$usercol = $row2['user'];
-	$time = $row2['entered'];
-	$image = $row2['entry'];
-	$entry = $row2['caption'];
-	$title = $row2['title'];
-    	if (!strcmp($usercol, $user)){  
-print <<<EOT
+ 	while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+	  $usercol = $row2['user'];
+	  $time = $row2['entered'];
+	  $image = $row2['entry'];
+	  $entry = $row2['caption'];
+	  $title = $row2['title'];
+    if (!strcmp($usercol, $user)) {  
+        print <<<EOT
         
           <div class="blog-post">
             <h2 class="blog-post-title">$title</h2>
             <p class="blog-post-meta">$time by <a href="#">$user</a></p>
-		<p> <img src='$image'> </p>
+		        <p> <img src='$image'> </p>
             <p> $entry </p> 
             <hr>
- 
-
-<!--
+          <!--
           <ul class="pager">
             <li><a href="#">Previous</a></li>
            <li><a href="#">Next</a></li>
           </ul>
--->
-</div>
+          -->
+          </div>
      
 EOT;
 	 }
 }
+
 print <<<EOT
 </div><!-- /.blog-main -->  
         <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
@@ -373,12 +359,10 @@ print <<<EOT
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="../../dist/js/bootstrap.min.js"></script>
     <script src="../../assets/js/docs.min.js"></script>
-
-
 EOT;
 }
 
-function printPostPage(){
+function printPostPage() {
 
 print <<<EOT
 <!DOCTYPE html>
@@ -416,11 +400,11 @@ print <<<EOT
       <div class="container">
         <nav class="blog-nav">
           <a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a>
-	  <a class = "blog-nav-item active" href = "#">Post</a>
+	        <a class = "blog-nav-item active" href = "#">Post</a>
           <a class="blog-nav-item" href="followersPage.php">Followers</a>
           <a class="blog-nav-item" href="followingPage.php">Following</a>
-	<a class = "blog-nav-item" href ="#">Profile</a>
-			      <a class = "blog-nav-item" href = "toHomePage.php">Home</a>
+	        <a class = "blog-nav-item" href ="#">Profile</a>
+			    <a class = "blog-nav-item" href = "toHomePage.php">Home</a>
         </nav>
       </div>
     </div>
@@ -430,6 +414,7 @@ print <<<EOT
       <div class="row">
 <div class="col-sm-8 blog-main">
 EOT;
+
 print <<<EOT
     <div class="container">
 
@@ -440,10 +425,7 @@ print <<<EOT
 <a href="postPage.php?type=text" class="btn btn-default btn-med" role="button"><span class="glyphicon glyphicon-font"></span> Text</a>
 <a href="postPage.php?type=upload" class="btn btn-default btn-med" role="button"><span class="glyphicon glyphicon-upload"></span> Upload</a>
 EOT;
-
-
 }
-
 
 function printAllPosts($dbh){
 
@@ -491,8 +473,8 @@ print <<<EOT
 
      
       <div class="row">
-<div class="col-sm-8 blog-main">
- <div class="blog-header">
+      <div class="col-sm-8 blog-main">
+        <div class="blog-header">
         <p class="lead blog-description">The most recent posts from all users.</p>
       </div>
 EOT;
@@ -522,10 +504,6 @@ EOT;
 	 }
 print <<<EOT
 </div><!-- /.blog-main -->  
-        
-          
-        
-
 
       </div><!-- /.row -->
 
@@ -549,7 +527,8 @@ print <<<EOT
 
 EOT;
 }
-function showBlog($dbh, $user){
+
+function showBlog($dbh, $user) {
 
 print <<<EOT
 <!DOCTYPE html>
