@@ -27,7 +27,7 @@ if(isset($_REQUEST['tables'])) {
 
 function post($query,$dbh) {
 	$self = $_SERVER['PHP_SELF']; 
-	$resultset = query($dbh,"SELECT * FROM blog_entry WHERE entry LIKE '%$query%'"); 
+	$resultset = query($dbh,"SELECT * FROM blog_entry WHERE caption LIKE '%$query%' OR title LIKE '%$query%'"); 
 	$size = $resultset -> numRows();
 	if ($size === 0) {
 		echo "<h2>No Posts Found";
@@ -35,12 +35,12 @@ function post($query,$dbh) {
 		echo "<h2>Posts ($size)</h2>"; 
 		while($row = $resultset->fetchRow(MDB2_FETCHMODE_ASSOC)) {
 			$user = $row['user'];
-			$entry = $row['entry'];
+			$caption = $row['caption'];
 			$entered = $row['entered'];
 			$title = $row['title'];
 			echo "<p>Blog Post by $user</p>
 					<p>Entry Title: $title</p>
-					<p>Entry: $entry</p>
+					<p>Entry: $caption</p>
 					<Post Date: $entered</p>	";	
 		}
 	}
