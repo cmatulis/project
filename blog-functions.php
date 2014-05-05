@@ -931,53 +931,33 @@ EOT;
 
 }
 
-function printSignupPage(){
-print <<<EOT
-  	<!DOCTYPE html>
-	<html lang="en">
-  	<head>
-    		<meta charset="utf-8">
-    		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-    		<meta name="viewport" content="width=device-width, initial-scale=1">
-    		<meta name="description" content="">
-    		<meta name="author" content="">
-    		<link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+function signUp($dbh){
+  if (isset ($_POST['username']) && isset($_POST['password'])) {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    $email = $_POST['email']; 
 
-    		<title>Sign Up</title>
+    $user_check = query($dbh,"SELECT user FROM blog_user WHERE user='$username'"); 
+    $do_usercheck = $user_check -> numRows();
 
-    		<!-- Bootstrap core CSS -->
-    		<link href="bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
+    $email_check = query($dbh,"SELECT email from blog_user WHERE email='$email'");
+    $do_emailcheck = $email_check -> numRows();
 
-    		<!-- Custom styles for this template -->
-    		<link href="bootstrap-3.1.1-dist/css/signin.css" rel="stylesheet"> 
-
-    		<!-- Just for debugging purposes. Don't actually copy this line! -->
-    		<!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
-    		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    		<!--[if lt IE 9]>
-      		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    		<![endif]-->
-  	</head>
-
-  	<body>
-
-    		<div class="container">
-      			<form class="form-signin" role="form" method ="post" action = "signUpPage.php" method>
-        			<h2 class="form-signin-heading">Sign Up</h2>
-        			<input type="username" name="username" class="form-control" placeholder="Username" required autofocus>
-        			<input type="email" name="email" class="form-control" placeholder="Email address" required>
-        			<input type="password" name="password" class="form-control" placeholder="Password" required>
-        			<p><button type="submit" name="submit" class="btn btn-lg btn-primary btn-block">Sign up</button><p>     
-      			</form>
-    		</div> <!-- /container -->
- 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-
-EOT;
+    echo '<div class="container"><center>';
+     
+    if ($do_usercheck > 0) {
+      echo "<h4> Username is already in use!</h4>"; 
+    } if ($do_emailcheck > 0) {
+      echo "<h4> Email is already in use!</h4>"; 
+    } if (($do_usercheck == 0) && ($do_emailcheck ==0)) {
+      $query = "INSERT into blog_user VALUES ('$username','$password',password('$password'),'$email')";
+      $resultset = query($dbh,$query);
+      if ($resultset) {
+        echo "<h4> You are now registered. Click <a href=\"blog-ex-login-user.php\">here</a> to return to login page </h4>";
+      }
+    }
+    echo "</center></div>";
+  }
 }
 
 function printSearchPage() {
