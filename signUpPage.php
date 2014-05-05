@@ -2,10 +2,10 @@
 
 require_once("MDB2.php");
 require_once("/home/cs304/public_html/php/MDB2-functions.php");
-require_once("/students/slee14/public_html/project.v2/blog-functions.php");
-require_once("/students/slee14/public_html/cs304/slee14-dsn.inc");
+require_once("/students/cmatulis/public_html/project/blog-functions.php");
+require_once("/students/cmatulis/public_html/cs304/cmatulis-dsn.inc");
 
-$dbh = db_connect($slee14_dsn);
+$dbh = db_connect($cmatulis_dsn);
 
 print <<<EOT
 <!DOCTYPE html>
