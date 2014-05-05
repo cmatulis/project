@@ -76,5 +76,6 @@ create table comments(
 create table likes(
        entry_id int,
        liking_user varchar(30),
-       like_time timestamp)
+       like_time timestamp,
+	primary key (entry_id, liking_user))
 	TYPE = InnoDB;
