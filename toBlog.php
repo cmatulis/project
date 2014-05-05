@@ -8,6 +8,10 @@ require_once("/students/cmatulis/public_html/cs304/cmatulis-dsn.inc");
 $dbh = db_connect($cmatulis_dsn);
 $thecookie = $_COOKIE['304bloguserphp'];
 
+if(!isset($_COOKIE['304bloguserphp'])) {
+    header('Location: blog-ex-login-user.php');
+}
+
 if (isSet($_POST['unfollowfollowing'])){
 	$user1 = $_POST['unfollowfollowing'];
 	$user2 = $_POST['unfollowfollower'];

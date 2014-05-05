@@ -333,6 +333,7 @@ print <<<EOT
             				<p class="blog-post-meta">$time by <a href="#">$usercol</a></p>
 					<p> <img src='$image'> </p>
             				<p> $entry </p> 
+					<p><a href = "logoutPage.php">Comment</a> </p>
 		
             			<hr>
  
@@ -519,6 +520,7 @@ print <<<EOT
             		<p class="blog-post-meta">$time by <a href="http://cs.wellesley.edu/~cmatulis/project/toBlog.php?user=$user">$user</a></p>
   			<p> <img src='$image'></p>
             		<p> $entry </p> 
+			<p><a href = "logoutPage.php">Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   <a href = "logoutPage.php">Like</a>   </p>
             		<hr>
     
 			</div>
@@ -668,6 +670,7 @@ print <<<EOT
             			<p class="blog-post-meta">$time by <a href="#">$usercol</a></p>
   				<p> <img src = '$image'> </p>
             			<p> $entry </p> 
+				<p><a href = "logoutPage.php">Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   <a href = "logoutPage.php">Like</a>   </p>
             			<hr>
 			</div>
      

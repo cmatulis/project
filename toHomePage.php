@@ -8,7 +8,7 @@ require_once("/students/cmatulis/public_html/cs304/cmatulis-dsn.inc");
 $dbh = db_connect($cmatulis_dsn);
 
 if(!isset($_COOKIE['304bloguserphp'])){
-  header('Location: blog-ex-login-user.php');
+  	header('Location: blog-ex-login-user.php');
 }
 
 $poster = $_COOKIE['304bloguserphp'];
