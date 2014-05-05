@@ -279,6 +279,8 @@ print <<<EOT
       			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     			<![endif]-->
+			<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+			<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 				  
   		</head>
 
@@ -319,13 +321,15 @@ EOT;
   	$preparedquery2 = "SELECT * from blog_entry where user = ? order by date(entered) desc, time(entered) desc";
   	//Get all the blog entries, including, presumably, the one just added, if any
 	$resultset2 = prepared_query($dbh, $preparedquery2, $user);
- 	
 	while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
 		$usercol = $row2['user'];
 		$time = $row2['entered'];
 		$image = $row2['entry'];
 		$entry = $row2['caption'];
 		$title = $row2['title'];
+		$id = $row2['entry_id'];
+		$hrefid = "#"."div".$id;
+		$divid = "div".$id;
     		if (!strcmp($usercol, $user)){  
 print <<<EOT
           			<div class="blog-post">
@@ -333,7 +337,33 @@ print <<<EOT
             				<p class="blog-post-meta">$time by <a href="#">$usercol</a></p>
 					<p> <img src='$image'> </p>
             				<p> $entry </p> 
-					<p><a href = "logoutPage.php">Comment</a> </p>
+					<p><a href = "#">Comment</a> </p>
+					<div class="panel-group" id="accordion">
+
+  				<div class="panel panel-default">
+    					<div class="panel-heading">
+      						<h4 class="panel-title">
+        						<a data-toggle="collapse" data-parent="#accordion" href=$hrefid>
+          							View Likes
+        						</a>
+      						</h4>
+    					</div>
+    					<div id=$divid class="panel-collapse collapse">
+      						<div class="panel-body">
+EOT;
+						$preparedquery3 = "select * from likes where entry_id = ?";
+						$resultset3 = prepared_query($dbh, $preparedquery3, $id);
+							while ($row3 = $resultset3 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+		$likinguser = $row3['liking_user'];
+print <<<EOT
+       						<p><a href="toBlog.php?user=$likinguser">$likinguser</a> liked this </p>
+EOT;
+}
+print <<<EOT
+      						</div>
+    					</div>
+  				</div>
+			</div>
 		
             			<hr>
  
@@ -472,6 +502,7 @@ print <<<EOT
 
     			<!-- Bootstrap core CSS -->
     			<link href="bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
+			
 
 			<!-- Custom styles for this template -->
     			<link href="bootstrap-3.1.1-dist/css/blog.css" rel="stylesheet"> 
@@ -484,6 +515,8 @@ print <<<EOT
       			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     			<![endif]-->
+			<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+			<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 				  
   		</head>
 
@@ -514,18 +547,53 @@ EOT;
 		$image = $row2['entry'];
 		$entry = $row2['caption'];
 		$title = $row2['title'];
+		$id = $row2['entry_id'];
+		$hrefid = "#"."div".$id;
+		$divid = "div".$id;
 print <<<EOT
           		<div class="blog-post">
             		<h2 class="blog-post-title">$title</h2>
             		<p class="blog-post-meta">$time by <a href="http://cs.wellesley.edu/~cmatulis/project/toBlog.php?user=$user">$user</a></p>
   			<p> <img src='$image'></p>
             		<p> $entry </p> 
-			<p><a href = "logoutPage.php">Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   <a href = "logoutPage.php">Like</a>   </p>
-            		<hr>
-    
-			</div>
+			<p><a href = "#">Comment</a> </p>
+					<div class="panel-group" id="accordion">
+
+  				<div class="panel panel-default">
+    					<div class="panel-heading">
+      						<h4 class="panel-title">
+        						<a data-toggle="collapse" data-parent="#accordion" href=$hrefid>
+          							View Likes
+        						</a>
+      						</h4>
+    					</div>
+    					<div id=$divid class="panel-collapse collapse">
+      						<div class="panel-body">
 EOT;
-	 }
+$preparedquery3 = "select * from likes where entry_id = ?";
+						$resultset3 = prepared_query($dbh, $preparedquery3, $id);
+							while ($row3 = $resultset3 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+		$likinguser = $row3['liking_user'];
+print <<<EOT
+       						<p><a href="toBlog.php?user=$likinguser">$likinguser</a> liked this </p>
+EOT;
+}
+
+print <<<EOT
+      						</div>
+    					</div>
+  				</div>
+			</div>
+		
+            			<hr>
+ 
+
+
+				</div>
+EOT;
+	 	}
+	
+
 print <<<EOT
 		</div><!-- /.blog-main -->  
       		</div><!-- /.row -->
@@ -576,6 +644,8 @@ print <<<EOT
       			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     			<![endif]-->
+			<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+			<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 				  
   		</head>
 
@@ -663,19 +733,52 @@ EOT;
 		$time = $row2['entered'];
 		$image = $row2['entry'];
 		$entry = $row2['caption'];
-		$title = $row2['title'];    
+		$title = $row2['title'];
+		$id = $row2['entry_id'];
+		$hrefid = "#"."div".$id;
+		$divid = "div".$id;    
 print <<<EOT
           		<div class="blog-post">
             			<h2 class="blog-post-title">$title</h2>
             			<p class="blog-post-meta">$time by <a href="#">$usercol</a></p>
   				<p> <img src = '$image'> </p>
             			<p> $entry </p> 
-				<p><a href = "logoutPage.php">Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   <a href = "logoutPage.php">Like</a>   </p>
-            			<hr>
-			</div>
-     
+				<p><a href = "#">Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   <a href = "#">Like</a>   </p>
+				<div class="panel-group" id="accordion">
+
+  				<div class="panel panel-default">
+    					<div class="panel-heading">
+      						<h4 class="panel-title">
+        						<a data-toggle="collapse" data-parent="#accordion" href=$hrefid>
+          							View Likes
+        						</a>
+      						</h4>
+    					</div>
+    					<div id=$divid class="panel-collapse collapse">
+      						<div class="panel-body">
+EOT;
+$preparedquery3 = "select * from likes where entry_id = ?";
+						$resultset3 = prepared_query($dbh, $preparedquery3, $id);
+							while ($row3 = $resultset3 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+		$likinguser = $row3['liking_user'];
+print <<<EOT
+       						<p><a href="toBlog.php?user=$likinguser">$likinguser</a> liked this </p>
 EOT;
 }
+
+print <<<EOT
+      						</div>
+    					</div>
+  				</div>
+			</div>
+		
+            			<hr>
+ 
+
+
+				</div>
+EOT;
+	 	}
 print <<<EOT
 			</div><!-- /.blog-main -->  
         		<div class="col-sm-3 col-sm-offset-1 blog-sidebar">
@@ -930,6 +1033,8 @@ print <<<EOT
 EOT;
 
 }
+
+
 
 function signUp($dbh){
   if (isset ($_POST['username']) && isset($_POST['password'])) {
