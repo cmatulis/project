@@ -20,7 +20,23 @@ if (isSet($_POST['unfollowfollowing'])){
 	showBlog($dbh, $user1, $user2);
 }
 
-if (isSet($_POST['followfollowing'])){
+else if (isSet($_GET['entry_id'])){
+	$entry_id = $_GET['entry_id'];
+	$liking_user = $thecookie;
+	$posting_user = $_GET['posting_user'];
+	if (strcmp($liking_user, $posting_user)){
+	$preparedquery4 = "select * from likes where entry_id = ? and liking_user = ?";
+			$resultset4 = prepared_query($dbh, $preparedquery4, array($entry_id, $liking_user));
+			$resultset4check = $resultset4 -> numRows();
+			if ($resultset4check == 0){
+	$insert = "insert into likes(entry_id, liking_user) values(?,?)";
+	$rows = prepared_statement($dbh, $insert, array($entry_id, $liking_user));
+	}
+	}
+	showBlog($dbh, $posting_user, $liking_user);
+}
+
+else if (isSet($_POST['followfollowing'])){
 	$user1 = $_POST['followfollowing'];
 	$user2 = $_POST['followfollower'];
 	$insert = "insert into follows(user, following) values(?, ?)";
