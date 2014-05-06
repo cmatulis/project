@@ -193,12 +193,7 @@ print <<<EOT
           				<h2>Recent Posts</h2>
           				<p>View the most recent posts from all users</p>
        				<p><a class="btn btn-default" href="viewAllPage.php" role="button">View Recent &raquo;</a></p>
-       			</div>
-        			<div class="col-md-4">
-          				<h2>Search</h2>
-          				<p>Search the site to find other users and blog posts</p>
-          				<p><a class="btn btn-default" href="searchpage.php" role="button">Search &raquo;</a></p>
-        			</div>
+       			  </div>
       			</div>
 
       		<hr>
