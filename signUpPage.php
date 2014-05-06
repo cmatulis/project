@@ -6,8 +6,7 @@ require_once("/students/cmatulis/public_html/project/blog-functions.php");
 require_once("/students/cmatulis/public_html/cs304/cmatulis-dsn.inc");
 
 $dbh = db_connect($cmatulis_dsn);
-
-print <<<EOT
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -51,8 +50,8 @@ print <<<EOT
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-EOT;
-signUp($dbh);
-?>
+    <?php
+      signUp($dbh);
+    ?>
 </body>
 </html>
