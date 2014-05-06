@@ -51,9 +51,9 @@ $query = mysql_real_escape_string($_REQUEST['searchentry']);
             <li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
             <li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
           </ul>
-          <form class="navbar-form navbar-right" role="search">
+          <form class="navbar-form navbar-right" role="search" action="searchResults.php">
             <div class="form-group">
-              <input type="text" class="form-control" placeholder="Search">
+              <input type="text" class="form-control" placeholder="Search" name="searchentry">
             </div>
             <button type="submit" class="btn btn-default">Submit</button>
           </form>
