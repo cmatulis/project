@@ -295,7 +295,7 @@ print <<<EOT
            </ul>
            <form class="navbar-form navbar-right" role="search" action=searchResults.php>
              <div class="form-group">
-               <input type="text" class="form-control" placeholder="Search" name="searchentry" id="searchentry>
+               <input type="text" class="form-control" placeholder="Search" name="searchentry" required>
              </div>
             <button type="submit" class="btn btn-default">Submit</button>
           </form>
@@ -469,7 +469,7 @@ print <<<EOT
            </ul>
            <form class="navbar-form navbar-right" role="search" action=searchResults.php>
              <div class="form-group">
-               <input type="text" class="form-control" placeholder="Search" name="searchentry" id="searchentry>
+               <input type="text" class="form-control" placeholder="Search" name="searchentry" required>
              </div>
             <button type="submit" class="btn btn-default">Submit</button>
           </form>
@@ -536,7 +536,7 @@ print <<<EOT
            </ul>
            <form class="navbar-form navbar-right" role="search" action=searchResults.php>
              <div class="form-group">
-               <input type="text" class="form-control" placeholder="Search" name="searchentry" id="searchentry>
+               <input type="text" class="form-control" placeholder="Search" name="searchentry" required>
              </div>
             <button type="submit" class="btn btn-default">Submit</button>
           </form>
@@ -696,7 +696,7 @@ print <<<EOT
            </ul>
            <form class="navbar-form navbar-right" role="search" action=searchResults.php>
              <div class="form-group">
-               <input type="text" class="form-control" placeholder="Search" name="searchentry" id="searchentry>
+               <input type="text" class="form-control" placeholder="Search" name="searchentry" required>
              </div>
             <button type="submit" class="btn btn-default">Submit</button>
           </form>
@@ -934,7 +934,7 @@ print <<<EOT
            </ul>
            <form class="navbar-form navbar-right" role="search" action=searchResults.php>
              <div class="form-group">
-               <input type="text" class="form-control" placeholder="Search" name="searchentry" id="searchentry>
+               <input type="text" class="form-control" placeholder="Search" name="searchentry" required>
              </div>
             <button type="submit" class="btn btn-default">Submit</button>
           </form>
@@ -1043,7 +1043,7 @@ print <<<EOT
            </ul>
            <form class="navbar-form navbar-right" role="search" action=searchResults.php>
              <div class="form-group">
-               <input type="text" class="form-control" placeholder="Search" name="searchentry" id="searchentry>
+               <input type="text" class="form-control" placeholder="Search" name="searchentry" required>
              </div>
             <button type="submit" class="btn btn-default">Submit</button>
           </form>
