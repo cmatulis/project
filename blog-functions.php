@@ -285,30 +285,35 @@ print <<<EOT
   		</head>
 
   		<body>
+	  <div class="blog-masthead">
+       <div class="container">
+         <nav class="blog-nav">
+           <ul class="nav navbar-nav">
+             <li><a class="blog-nav-item active" href="#">Blog</a></li>
+             <li><a class="blog-nav-item" href = "postPage.php?type=">Post</a></li>
+             <li><a class="blog-nav-item" href="followersPage.php">Followers</a></li>
+             <li><a class="blog-nav-item" href="followingPage.php">Following</a></li>
+             <li><a class="blog-nav-item" href ="#">Profile</a></li>
+             <li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
+             <li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
+           </ul>
+           <form class="navbar-form navbar-right" role="search" action=searchResults.php>
+             <div class="form-group">
+               <input type="text" class="form-control" placeholder="Search" name="searchentry" id="searchentry>
+             </div>
+            <button type="submit" class="btn btn-default">Submit</button>
+          </form>
+        </nav>
+      </div>
+    </div>
 
-    			<div class="blog-masthead">
-      				<div class="container">
-        				<nav class="blog-nav">
-          					<a class="blog-nav-item active" href="#">Blog</a>
-	  					<a class = "blog-nav-item" href = "postPage.php?type=">Post</a>
-          					<a class="blog-nav-item" href="followersPage.php">Followers</a>
-          					<a class="blog-nav-item" href="followingPage.php">Following</a>
-						<a class = "blog-nav-item" href ="#">Profile</a>
-			      			<a class = "blog-nav-item" href = "toHomePage.php">Home</a>
-						<a class = "blog-nav-item" href = "logoutPage.php">Logout</a>
-        				</nav>
-      				</div>
-    			</div>
-
-    			<div class="container">
-
-      				<div class="blog-header">
-        				<h1 class="blog-title">$user</h1>
-        				<p class="lead blog-description">Blog description goes here</p>
-      				</div>
-
-      				<div class="row">
-					<div class="col-sm-8 blog-main">
+    <div class="container">
+      <div class="blog-header">
+        <h1 class="blog-title">$user</h1>
+        <p class="lead blog-description">Blog description goes here</p>
+      </div>
+      <div class="row">
+      <div class="col-sm-8 blog-main">
 EOT;
 	$profile = '';
 	$preparedquery1 = "SELECT profile FROM profile where user = ?";
@@ -454,20 +459,27 @@ print <<<EOT
 
   		<body>
 
-    		<div class="blog-masthead">
-      			<div class="container">
-        			<nav class="blog-nav">
-          				<a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a>
-	  				<a class = "blog-nav-item active" href = "#">Post</a>
-          				<a class="blog-nav-item" href="followersPage.php">Followers</a>
-          				<a class="blog-nav-item" href="followingPage.php">Following</a>
-					<a class = "blog-nav-item" href ="#">Profile</a>
-			      		<a class = "blog-nav-item" href = "toHomePage.php">Home</a>
-					<a class = "blog-nav-item" href = "logoutPage.php">Logout</a>
-        			</nav>
-      			</div>
-    		</div>
-
+      <div class="blog-masthead">
+        <div class="container">
+          <nav class="blog-nav">
+            <ul class="nav navbar-nav">
+              <li><a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a></li>
+              <li><a class="blog-nav-item active" href = "postPage.php?type=">Post</a></li>
+              <li><a class="blog-nav-item" href="followersPage.php">Followers</a></li>
+              <li><a class="blog-nav-item" href="followingPage.php">Following</a></li>
+              <li><a class="blog-nav-item" href ="#">Profile</a></li>
+              <li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
+              <li><a class = "blog-nav-item" href = "logoutPage.php">Logout</a></li>
+            </ul>
+            <form class="navbar-form navbar-right" role="search" action="searchResults.php">
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="Search" name="searchentry" id="searchentry">
+              </div>
+              <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+          </nav>
+        </div>
+      </div>
     		<div class="container">
 
       			<div class="row">
@@ -522,14 +534,27 @@ print <<<EOT
 
   		<body>
 
-    			<div class="blog-masthead">
-      				<div class="container">
-        				<nav class="blog-nav">
-			      			<a class = "blog-nav-item" href = "toHomePage.php">Home</a>
-						<a class = "blog-nav-item" href = "logoutPage.php">Logout</a>
-        				</nav>
-      				</div>
-    			</div>
+    		<div class="blog-masthead">
+          <div class="container">
+            <nav class="blog-nav">
+              <ul class="nav navbar-nav">
+                <li><a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a></li>
+                <li><a class="blog-nav-item" href = "postPage.php?type=">Post</a></li>
+                <li><a class="blog-nav-item" href="followersPage.php">Followers</a></li>
+                <li><a class="blog-nav-item" href="followingPage.php">Following</a></li>
+                <li><a class="blog-nav-item" href ="#">Profile</a></li>
+                <li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
+                <li><a class = "blog-nav-item" href = "logoutPage.php">Logout</a></li>
+              </ul>
+              <form class="navbar-form navbar-right" role="search" action="searchResults.php">
+                <div class="form-group">
+                  <input type="text" class="form-control" placeholder="Search" name="searchentry" id="searchentry">
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+              </form>
+            </nav>
+          </div>
+        </div>
 
     			<div class="container">
       				<div class="row">
@@ -651,15 +676,27 @@ print <<<EOT
 
   		<body>
 			    
-    			<div class="blog-masthead">
-      				<div class="container">
-        				<nav class="blog-nav">
-          					<a class="blog-nav-item active" href="#">Blog</a>
-			      			<a class = "blog-nav-item" href = "toHomePage.php">Home</a>
-						<a class = "blog-nav-item" href = "logoutPage.php">Logout</a>
-        				</nav>
-      				</div>
-    			</div>
+    		<div class="blog-masthead">
+        <div class="container">
+          <nav class="blog-nav">
+            <ul class="nav navbar-nav">
+              <li><a class="blog-nav-item active" href="#">Blog</a></li>
+              <li><a class="blog-nav-item" href = "postPage.php?type=">Post</a></li>
+              <li><a class="blog-nav-item" href="followersPage.php">Followers</a></li>
+              <li><a class="blog-nav-item" href="#">Following</a></li>
+              <li><a class="blog-nav-item" href ="#">Profile</a></li>
+              <li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
+              <li><a class = "blog-nav-item" href = "logoutPage.php">Logout</a></li>
+            </ul>
+            <form class="navbar-form navbar-right" role="search" action="searchResults.php">
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="Search" name="searchentry" id="searchentry">
+              </div>
+              <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+          </nav>
+        </div>
+      </div>
 EOT;
 	$result = 0;
 	$preparedquery2 = "SELECT following FROM follows where user = ?";
@@ -860,20 +897,27 @@ print <<<EOT
   	</head>
 
   	<body>
-			    
-    		<div class="blog-masthead">
-      			<div class="container">
-        			<nav class="blog-nav">
-          				<a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a>
-	  				<a class = "blog-nav-item" href = "postPage.php?type=">Post</a>
-          				<a class="blog-nav-item active" href="#">Followers</a>
-          				<a class="blog-nav-item" href="followingPage.php">Following</a>
-					<a class = "blog-nav-item" href ="#">Profile</a>
-			      		<a class = "blog-nav-item" href = "toHomePage.php">Home</a>
-					<a class = "blog-nav-item" href = "logoutPage.php">Logout</a>
-        			</nav>
-      			</div>
-    		</div>
+			<div class="blog-masthead">
+        <div class="container">
+          <nav class="blog-nav">
+            <ul class="nav navbar-nav">
+              <li><a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a></li>
+              <li><a class="blog-nav-item" href = "postPage.php?type=">Post</a></li>
+              <li><a class="blog-nav-item active" href="followersPage.php">Followers</a></li>
+              <li><a class="blog-nav-item" href="followingPage.php">Following</a></li>
+              <li><a class="blog-nav-item" href ="#">Profile</a></li>
+              <li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
+              <li><a class = "blog-nav-item" href = "logoutPage.php">Logout</a></li>
+            </ul>
+            <form class="navbar-form navbar-right" role="search" action=searchResults.php>
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="Search" name="searchentry" id="searchentry">
+              </div>
+              <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+          </nav>
+        </div>
+      </div>
 EOT;
 print <<<EOT
     	<div class="container">
@@ -960,20 +1004,27 @@ print <<<EOT
   	</head>
 
   	<body>
-			    
-    		<div class="blog-masthead">
-      			<div class="container">
-        			<nav class="blog-nav">
-          				<a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a>
-	  				<a class = "blog-nav-item" href = "postPage.php?type=">Post</a>
-          				<a class="blog-nav-item" href="followersPage.php">Followers</a>
-          				<a class="blog-nav-item active" href="#">Following</a>
-					<a class = "blog-nav-item" href ="#">Profile</a>
-			      		<a class = "blog-nav-item" href = "toHomePage.php">Home</a>
-					<a class = "blog-nav-item" href = "logoutPage.php">Logout</a>
-        			</nav>
-      			</div>
-    		</div>
+      <div class="blog-masthead">
+        <div class="container">
+          <nav class="blog-nav">
+            <ul class="nav navbar-nav">
+              <li><a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a></li>
+              <li><a class="blog-nav-item" href = "postPage.php?type=">Post</a></li>
+              <li><a class="blog-nav-item" href="followersPage.php">Followers</a></li>
+              <li><a class="blog-nav-item active" href="#">Following</a></li>
+              <li><a class="blog-nav-item" href ="#">Profile</a></li>
+              <li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
+              <li><a class = "blog-nav-item" href = "logoutPage.php">Logout</a></li>
+            </ul>
+            <form class="navbar-form navbar-right" role="search" action=searchResults.php>
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="Search" name="searchentry" id="searchentry">
+              </div>
+              <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+          </nav>
+        </div>
+      </div>
 
 EOT;
 print <<<EOT
@@ -1065,58 +1116,59 @@ function signUp($dbh){
   }
 }
 
-function printSearchPage() {
-print <<<EOT
-  	<!DOCTYPE html>
-	<html lang="en">
-  	<head>
-    		<meta charset="utf-8">
-    		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-    		<meta name="viewport" content="width=device-width, initial-scale=1">
-    		<meta name="description" content="">
-    		<meta name="author" content="">
-    		<link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+function post($query,$dbh) {
+  $self = $_SERVER['PHP_SELF']; 
+  $resultset = query($dbh,"SELECT * FROM blog_entry WHERE caption LIKE '%$query%' OR title like '%$query%'
+                      ORDER BY time(entered) desc"); 
+  $size = $resultset -> numRows();
+  if ($size === 0) {
+    echo "<h2>No Posts Found</h2>";
+  } else {
+      while($row = $resultset->fetchRow(MDB2_FETCHMODE_ASSOC)) {
+        $user = $row['user'];
+        $title = $row['title'];
+        $time = $row['entered'];
+        $image = $row['entry'];
+        $entry = $row['caption'];
 
-    		<title>Search</title>
+        echo "
+        <div class='blog-post'>
+                <h2 class='blog-post-title'>$title</h2>
+                <p class='blog-post-meta'>$time by <a href='toBlog.php?user=$user'>$user</a></p>
+          <p> <img src='$image'> </p>
+                <p> $entry </p> 
+                <hr>
+         </div> <!-- blog-post> 
 
-    		<!-- Bootstrap core CSS -->
-    		<link href="bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
-
-    		<!-- Custom styles for this template -->
-    		<link href="bootstrap-3.1.1-dist/css/boostrap-theme-min.css" rel="stylesheet"> 
-
-    		<!-- Just for debugging purposes. Don't actually copy this line! -->
-    		<!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
-    		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    		<!--[if lt IE 9]>
-      		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    		<![endif]-->
-  	</head>
-
-  	<body>
-  		<form action="searchpage.php">
-                	<p>Search</p>
-                		<!-- drop down menu -->
-                		<select name="tables">
-                    			<option value="post">Posts</option>
-                    			<option value="user">Users</option>
-                    			<option value="both">Both</option>
-                		</select><br>
-                	<p>for</p>
-                		<!-- text input -->
-                		<input type="text" name="sought" required><br>
-                		<!-- submit button -->
-                		<input type="submit">
-            </form>
-
-            <div id="results">
-                <?php require('searchpage.php'); ?>
-            </div> <!-- results -->
-EOT;
-
+  <!--
+                <ul class='pager'>
+                  <li><a href='#'>Previous</a></li>
+                  <li><a href='#'>Next</a></li>
+                </ul>
+  --> 
+    
+      ";
+      }
+  }
 }
 
+function user($query,$dbh) {
+  $self = $_SERVER['PHP_SELF'];
+  $resultset = query($dbh,"SELECT user FROM blog_user WHERE user LIKE '%$query%' 
+                    ORDER BY user asc"); 
+  $size = $resultset -> numRows(); 
+  if ($size === 0) {
+    echo "<h2>No Users Found</h2>";
+  } else {
+    echo "
+    <div class='blog-post'>
+    ";  
+    while($row = $resultset->fetchRow(MDB2_FETCHMODE_ASSOC)) {
+      $user = $row['user'];
+      echo "<h2><a href='http://cs.wellesley.edu/~cmatulis/project/toBlog.php?user=$user'>$user</a></h2>";   
+    }
+    echo "</div>"; //<!-- blog-post> 
+  }
+}
 
 ?>
