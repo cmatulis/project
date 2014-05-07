@@ -92,6 +92,7 @@ print <<<EOT
 EOT;
 }
 
+
 // This function prints a two-input form:  the poster box and the comment box
 
 
@@ -276,6 +277,7 @@ print <<<EOT
     			<![endif]-->
 			<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 			<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+			<script src="bootstrap-3.1.1-dist/js/bootstrap-modal.js"></script>
 				  
   		</head>
 
@@ -331,6 +333,8 @@ EOT;
 		$id = $row2['entry_id'];
 		$hrefid = "#"."div".$id;
 		$divid = "div".$id;
+		$modalhrefid = "#"."modaldiv".$id;
+		$modaldivid = "modaldiv".$id;
     		if (!strcmp($usercol, $user)){  
 print <<<EOT
           			<div class="blog-post">
@@ -338,7 +342,30 @@ print <<<EOT
             				<p class="blog-post-meta">$time by <a href="#">$usercol</a></p>
 					<p> <img src='$image'> </p>
             				<p> $entry </p> 
-					<p><a href = "#">Comment</a> </p>
+					<a data-toggle="modal" href=$modalhrefid>Comment</a>
+
+  					<!-- Modal -->
+  					<div class="modal fade" id=$modaldivid tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    						<div class="modal-dialog">
+      							<div class="modal-content">
+        							<div class="modal-header">
+          								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          								<h4 class="modal-title">Comment</h4>
+        							</div>
+        							<div class="modal-body">
+								<form class="form-horizontal" method="post" enctype = "multipart/form-data" action = "toBlog.php">  
+          								<textarea name="blogComment" id = "blogComment" class="input-xlarge" rows="5" cols="60"></textarea>
+									<input type="hidden" value=$id name = "entryId" id="entryId" class="form-control">
+								       <input type="hidden" value=$usercol name = "postAuthor" id="postAuthor" class="form-control">
+        							</div>
+        							<div class="modal-footer">
+          								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          								<button type="submit" class="btn btn-primary">Submit Comment</button>
+        							</div>
+							</form>
+      							</div><!-- /.modal-content -->
+    						</div><!-- /.modal-dialog -->
+  					</div><!-- /.modal -->
 					<div class="panel-group" id="accordion">
 
   				<div class="panel panel-default">
@@ -564,6 +591,8 @@ EOT;
 		$id = $row2['entry_id'];
 		$hrefid = "#"."div".$id;
 		$divid = "div".$id;
+		$modalhrefid = "#"."modaldiv".$id;
+		$modaldivid = "modaldiv".$id;
 print <<<EOT
           		<div class="blog-post">
             		<h2 class="blog-post-title">$title</h2>
@@ -577,18 +606,88 @@ $currentuser = $_COOKIE['304bloguserphp'];
 			$resultset4check = $resultset4 -> numRows();
 			if ($resultset4check == 0 & !strcmp($user, $currentuser)){
 	print <<<EOT
-			<p><a href = "#">Comment</a> </p>
+				<a data-toggle="modal" href=$modalhrefid>Comment</a>
+
+  					<!-- Modal -->
+  					<div class="modal fade" id=$modeldivid tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    						<div class="modal-dialog">
+      							<div class="modal-content">
+        							<div class="modal-header">
+          								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          								<h4 class="modal-title">Comment</h4>
+        							</div>
+        							<div class="modal-body">
+								<form class="form-horizontal" method="post" enctype = "multipart/form-data" action = "toBlog.php">  
+          								<textarea name="blogComment" id = "blogComment" class="input-xlarge" rows="5" cols="60"></textarea>
+									<input type="hidden" value=$id name = "entryId" id="entryId" class="form-control">
+								       <input type="hidden" value=$user name = "postAuthor" id="postAuthor" class="form-control">
+        							</div>
+        							<div class="modal-footer">
+          								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          								<button type="submit" class="btn btn-primary">Submit Comment</button>
+        							</div>
+							</form>
+      							</div><!-- /.modal-content -->
+    						</div><!-- /.modal-dialog -->
+  					</div><!-- /.modal -->
 EOT;
 }
 else if ($resultset4check == 0){
 	print <<<EOT
-			<p><a href = "#">Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   <a href = "toBlog.php?entry_id=$id&posting_user=$user">Like</a>   </p>
+			<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   <a href = "toBlog.php?entry_id=$id&posting_user=$user">Like</a>   </p>
+
+  					<!-- Modal -->
+  					<div class="modal fade" id=$modaldivid tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    						<div class="modal-dialog">
+      							<div class="modal-content">
+        							<div class="modal-header">
+          								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          								<h4 class="modal-title">Comment</h4>
+        							</div>
+        							<div class="modal-body">
+								<form class="form-horizontal" method="post" enctype = "multipart/form-data" action = "toBlog.php">  
+          								<textarea name="blogComment" id = "blogComment" class="input-xlarge" rows="5" cols="60"></textarea>
+									<input type="hidden" value=$id name = "entryId" id="entryId" class="form-control">
+								       <input type="hidden" value=$user name = "postAuthor" id="postAuthor" class="form-control">
+        							</div>
+        							<div class="modal-footer">
+          								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          								<button type="submit" class="btn btn-primary">Submit Comment</button>
+        							</div>
+							</form>
+      							</div><!-- /.modal-content -->
+    						</div><!-- /.modal-dialog -->
+  					</div><!-- /.modal -->
 EOT;
 }
 
 			else{
 print <<<EOT
-				<p><a href = "#">Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Liked   </p>
+				<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Liked   </p>
+				<!-- Modal -->
+  					<div class="modal fade" id=$modaldivid tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    						<div class="modal-dialog">
+      							<div class="modal-content">
+        							<div class="modal-header">
+          								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          								<h4 class="modal-title">Comment</h4>
+        							</div>
+        							<div class="modal-body">
+								<form class="form-horizontal" method="post" enctype = "multipart/form-data" action = "toBlog.php">  
+          								<textarea name="blogComment" id = "blogComment" class="input-xlarge" rows="5" cols="60"></textarea>
+									<input type="hidden" value=$id name = "entryId" id="entryId" class="form-control">
+								       <input type="hidden" value=$user name = "postAuthor" id="postAuthor" class="form-control">
+        							</div>
+        							<div class="modal-footer">
+          								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          								<button type="submit" class="btn btn-primary">Submit Comment</button>
+        							</div>
+							</form>
+      							</div><!-- /.modal-content -->
+    						</div><!-- /.modal-dialog -->
+  					</div><!-- /.modal -->
+
+				
 EOT;
 }			
 print <<<EOT
@@ -780,7 +879,9 @@ EOT;
 		$title = $row2['title'];
 		$id = $row2['entry_id'];
 		$hrefid = "#"."div".$id;
-		$divid = "div".$id;    
+		$divid = "div".$id; 
+		$modalhrefid = "#"."modaldiv".$id;
+		$modaldivid = "modaldiv".$id;   
 print <<<EOT
           		<div class="blog-post">
             			<h2 class="blog-post-title">$title</h2>
@@ -799,7 +900,30 @@ EOT;
 }
 			else{
 print <<<EOT
-				<p><a href = "#">Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Liked   </p>
+				<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Liked   </p>
+
+  					<!-- Modal -->
+  					<div class="modal fade" id=$modaldivid tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    						<div class="modal-dialog">
+      							<div class="modal-content">
+        							<div class="modal-header">
+          								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          								<h4 class="modal-title">Comment</h4>
+        							</div>
+        							<div class="modal-body">
+								<form class="form-horizontal" method="post" enctype = "multipart/form-data" action = "toBlog.php">  
+          								<textarea name="blogComment" id = "blogComment" class="input-xlarge" rows="5" cols="60"></textarea>
+									<input type="hidden" value=$id name = "entryId" id="entryId" class="form-control">
+								       <input type="hidden" value=$user name = "postAuthor" id="postAuthor" class="form-control">
+        							</div>
+        							<div class="modal-footer">
+          								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          								<button type="submit" class="btn btn-primary">Submit Comment</button>
+        							</div>
+							</form>
+      							</div><!-- /.modal-content -->
+    						</div><!-- /.modal-dialog -->
+  					</div><!-- /.modal -->
 EOT;
 }
 print <<<EOT
@@ -969,7 +1093,7 @@ EOT;
 		$follower = $row2['user'];
 print <<<EOT
 		<div class="blog-post">
-            		<p class="blog-post-meta"><a href="http://cs.wellesley.edu/~cmatulis/project/toBlog.php?user=$follower">$follower</a></p>
+            		<p class="blog-post-meta"><a href="toBlog.php?user=$follower">$follower</a></p>
             		<hr>
  		</div>   
 EOT;
@@ -1080,7 +1204,7 @@ EOT;
 print <<<EOT
         
           	<div class="blog-post">
-            		<p class="blog-post-meta"><a href="http://cs.wellesley.edu/~cmatulis/project/toBlog.php?user=$following">$following</a></p>
+            		<p class="blog-post-meta"><a href="toBlog.php?user=$following">$following</a></p>
             		<hr>
 		</div>    
 EOT;
@@ -1188,7 +1312,7 @@ function user($query,$dbh) {
     ";  
     while($row = $resultset->fetchRow(MDB2_FETCHMODE_ASSOC)) {
       $user = $row['user'];
-      echo "<h2><a href='http://cs.wellesley.edu/~cmatulis/project/toBlog.php?user=$user'>$user</a></h2>";   
+      echo "<h2><a href='toBlog.php?user=$user'>$user</a></h2>";   
     }
     echo "</div>"; //<!-- blog-post> 
   }

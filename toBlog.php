@@ -43,6 +43,18 @@ else if (isSet($_POST['followfollowing'])){
   	$rows = prepared_statement($dbh, $insert, array($user2, $user1));
 	showBlog($dbh, $user1, $user2);
 }
+else if (isSet($_POST['blogComment'])){
+	$insert = "insert into comments(entry_id, commenting_user, comment_text) values(?, ?, ?)";
+	$rows = prepared_statement($dbh, $insert, array($_POST['entryId'], $thecookie, $_POST['blogComment']));
+	$result = ($_POST['postAuthor'] == $thecookie);
+	if ($result == 1){
+  		printBlog($dbh, $thecookie);
+	}
+	else{
+		showBlog($dbh, $_POST['postAuthor'], $thecookie);
+	}
+
+}
 else{
 	$user = $_GET['user'];
 	$result = ($user == $thecookie);
