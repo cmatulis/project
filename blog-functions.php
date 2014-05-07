@@ -1363,8 +1363,11 @@ function signUp($dbh){
 
 function post($query,$dbh) {
   $self = $_SERVER['PHP_SELF']; 
-  $resultset = query($dbh,"SELECT * FROM blog_entry WHERE caption LIKE '%$query%' OR title like '%$query%'
-                      ORDER BY time(entered) desc"); 
+  $preparedquery = "SELECT * FROM blog_entry WHERE caption LIKE ? OR title LIKE ?"; 
+  $resultset = prepared_query($dbh,$preparedquery,array("%$query%","%$query%")); 
+
+  //$resultset = query($dbh,"SELECT * FROM blog_entry WHERE caption LIKE '%$query%' OR title like '%$query%'
+  //                    ORDER BY time(entered) desc"); 
   $size = $resultset -> numRows();
   if ($size === 0) {
     echo "<h2>No Posts Found</h2>";
@@ -1399,8 +1402,11 @@ function post($query,$dbh) {
 
 function user($query,$dbh) {
   $self = $_SERVER['PHP_SELF'];
-  $resultset = query($dbh,"SELECT user FROM blog_user WHERE user LIKE '%$query%' 
-                    ORDER BY user asc"); 
+  $preparedquery = "SELECT user from blog_user WHERE user LIKE ?"; 
+  $resultset = prepared_query($dbh,$preparedquery,"%$query%");
+
+  //$resultset = query($dbh,"SELECT user FROM blog_user WHERE user LIKE '%$query%' 
+  //                  ORDER BY user asc"); 
   $size = $resultset -> numRows(); 
   if ($size === 0) {
     echo "<h2>No Users Found</h2>";
