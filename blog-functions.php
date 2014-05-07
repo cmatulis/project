@@ -335,6 +335,8 @@ EOT;
 		$divid = "div".$id;
 		$modalhrefid = "#"."modaldiv".$id;
 		$modaldivid = "modaldiv".$id;
+		$commentshrefid = "#"."commentsdiv".$id;
+		$commentsdivid = "commentsdiv".$id;
     		if (!strcmp($usercol, $user)){  
 print <<<EOT
           			<div class="blog-post">
@@ -366,12 +368,44 @@ print <<<EOT
       							</div><!-- /.modal-content -->
     						</div><!-- /.modal-dialog -->
   					</div><!-- /.modal -->
-					<div class="panel-group" id="accordion">
+					
+EOT;
+	print <<<EOT
+				<div class="panel-group" id="accordion">
 
-  				<div class="panel panel-default">
+  					<div class="panel panel-default">
+    						<div class="panel-heading">
+      							<h4 class="panel-title">
+        							<a data-toggle="collapse" data-parent="#accordion" href=$commentshrefid>
+          								View Comments
+        							</a>
+      							</h4>
+    						</div>
+    						<div id=$commentsdivid class="panel-collapse collapse">
+      							<div class="panel-body">
+EOT;
+$preparedquery3 = "select * from comments where entry_id = ?";
+						$resultset3 = prepared_query($dbh, $preparedquery3, $id);
+							while ($row3 = $resultset3 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+		$comment_text = $row3['comment_text'];
+		$commenting_user = $row3['commenting_user'];
+print <<<EOT
+       							<p><a href="toBlog.php?user=$commenting_user">$commenting_user</a> said: $comment_text </p>
+EOT;
+}	
+
+print <<<EOT
+      							</div>
+    						</div>
+  					</div>
+				</div>
+EOT;
+print <<<EOT
+  				<div class="panel-group" id="accordion2">
+				<div class="panel panel-default">
     					<div class="panel-heading">
       						<h4 class="panel-title">
-        						<a data-toggle="collapse" data-parent="#accordion" href=$hrefid>
+        						<a data-toggle="collapse" data-parent="#accordion2" href=$hrefid>
           							View Likes
         						</a>
       						</h4>
@@ -593,6 +627,8 @@ EOT;
 		$divid = "div".$id;
 		$modalhrefid = "#"."modaldiv".$id;
 		$modaldivid = "modaldiv".$id;
+		$commentshrefid = "#"."commentsdiv".$id;
+		$commentsdivid = "commentsdiv".$id;
 print <<<EOT
           		<div class="blog-post">
             		<h2 class="blog-post-title">$title</h2>
@@ -609,7 +645,7 @@ $currentuser = $_COOKIE['304bloguserphp'];
 				<a data-toggle="modal" href=$modalhrefid>Comment</a>
 
   					<!-- Modal -->
-  					<div class="modal fade" id=$modeldivid tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  					<div class="modal fade" id=$modaldivid tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     						<div class="modal-dialog">
       							<div class="modal-content">
         							<div class="modal-header">
@@ -689,7 +725,37 @@ print <<<EOT
 
 				
 EOT;
-}			
+}	
+	print <<<EOT
+				<div class="panel-group" id="accordion">
+
+  					<div class="panel panel-default">
+    						<div class="panel-heading">
+      							<h4 class="panel-title">
+        							<a data-toggle="collapse" data-parent="#accordion" href=$commentshrefid>
+          								View Comments
+        							</a>
+      							</h4>
+    						</div>
+    						<div id=$commentsdivid class="panel-collapse collapse">
+      							<div class="panel-body">
+EOT;
+$preparedquery3 = "select * from comments where entry_id = ?";
+						$resultset3 = prepared_query($dbh, $preparedquery3, $id);
+							while ($row3 = $resultset3 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+		$comment_text = $row3['comment_text'];
+		$commenting_user = $row3['commenting_user'];
+print <<<EOT
+       							<p><a href="toBlog.php?user=$commenting_user">$commenting_user</a> said: $comment_text </p>
+EOT;
+}	
+
+print <<<EOT
+      							</div>
+    						</div>
+  					</div>
+				</div>
+EOT;
 print <<<EOT
 					<div class="panel-group" id="accordion">
 
@@ -881,7 +947,9 @@ EOT;
 		$hrefid = "#"."div".$id;
 		$divid = "div".$id; 
 		$modalhrefid = "#"."modaldiv".$id;
-		$modaldivid = "modaldiv".$id;   
+		$modaldivid = "modaldiv".$id;
+		$commentshrefid = "#"."commentsdiv".$id;
+		$commentsdivid = "commentsdiv".$id;   
 print <<<EOT
           		<div class="blog-post">
             			<h2 class="blog-post-title">$title</h2>
@@ -929,31 +997,61 @@ EOT;
 print <<<EOT
 				<div class="panel-group" id="accordion">
 
-  				<div class="panel panel-default">
-    					<div class="panel-heading">
-      						<h4 class="panel-title">
-        						<a data-toggle="collapse" data-parent="#accordion" href=$hrefid>
-          							View Likes
-        						</a>
-      						</h4>
-    					</div>
-    					<div id=$divid class="panel-collapse collapse">
-      						<div class="panel-body">
+  					<div class="panel panel-default">
+    						<div class="panel-heading">
+      							<h4 class="panel-title">
+        							<a data-toggle="collapse" data-parent="#accordion" href=$commentshrefid>
+          								View Comments
+        							</a>
+      							</h4>
+    						</div>
+    						<div id=$commentsdivid class="panel-collapse collapse">
+      							<div class="panel-body">
+EOT;
+$preparedquery3 = "select * from comments where entry_id = ?";
+						$resultset3 = prepared_query($dbh, $preparedquery3, $id);
+							while ($row3 = $resultset3 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+		$comment_text = $row3['comment_text'];
+		$commenting_user = $row3['commenting_user'];
+print <<<EOT
+       							<p><a href="toBlog.php?user=$commenting_user">$commenting_user</a> said: $comment_text </p>
+EOT;
+}
+
+print <<<EOT
+      							</div>
+    						</div>
+  					</div>
+				</div>
+EOT;
+print <<<EOT
+				<div class="panel-group" id="accordion">
+
+  					<div class="panel panel-default">
+    						<div class="panel-heading">
+      							<h4 class="panel-title">
+        							<a data-toggle="collapse" data-parent="#accordion" href=$hrefid>
+          								View Likes
+        							</a>
+      							</h4>
+    						</div>
+    						<div id=$divid class="panel-collapse collapse">
+      							<div class="panel-body">
 EOT;
 $preparedquery3 = "select * from likes where entry_id = ?";
 						$resultset3 = prepared_query($dbh, $preparedquery3, $id);
 							while ($row3 = $resultset3 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
 		$likinguser = $row3['liking_user'];
 print <<<EOT
-       						<p><a href="toBlog.php?user=$likinguser">$likinguser</a> liked this </p>
+       							<p><a href="toBlog.php?user=$likinguser">$likinguser</a> liked this </p>
 EOT;
 }
 
 print <<<EOT
-      						</div>
-    					</div>
-  				</div>
-			</div>
+      							</div>
+    						</div>
+  					</div>
+				</div>
 		
             			<hr>
  
