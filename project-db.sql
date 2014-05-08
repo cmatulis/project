@@ -54,12 +54,12 @@ TYPE = InnoDB;
 create table profile(
        user varchar(30),
        profile text,
-	fullname text,
-	birthdate text,
-	city text,
-	state text,
-	country text,
-	interests text,
+    	fullname text,
+    	birthdate text,
+    	city text,
+    	state text,
+    	country text,
+    	interests text,
        foreign key (user) references blog_user(user))
        TYPE = InnoDB;
 
