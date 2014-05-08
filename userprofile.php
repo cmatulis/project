@@ -12,7 +12,8 @@ if(!isset($_COOKIE['304bloguserphp'])) {
 }
 $user = $_GET['user'];
 ?> 
-
+<?php
+print <<<EOT
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -47,10 +48,7 @@ $user = $_GET['user'];
       <div class="container">
         <nav class="blog-nav">
           <ul class="nav navbar-nav">
-            <li><a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a></li>
-            <li><a class="blog-nav-item" href = "postPage.php?type=">Post</a></li>
-            <li><a class="blog-nav-item" href="followersPage.php">Followers</a></li>
-            <li><a class="blog-nav-item" href="followingPage.php">Following</a></li>
+            <li><a class="blog-nav-item" href="toBlog.php?user=$user">Blog</a></li>
             <li><a class="blog-nav-item" href ="#">Profile</a></li>
             <li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
             <li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
@@ -64,7 +62,8 @@ $user = $_GET['user'];
         </nav>
       </div>
     </div>
-
+EOT;
+?>
     <div class="container">
       <div class="blog-header">
         <?php echo "<h1 class='blog-title'>$user's Profile</h1>"; ?>

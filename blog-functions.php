@@ -860,11 +860,8 @@ print <<<EOT
        <div class="container">
          <nav class="blog-nav">
            <ul class="nav navbar-nav">
-             <li><a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a></li>
-              <li><a class="blog-nav-item" href = "postPage.php?type=">Post</a></li>
-                  <li><a class="blog-nav-item" href="followersPage.php">Followers</a></li>
-                  <li><a class="blog-nav-item" href="followingPage.php">Following</a></li>
-                  <li><a class="blog-nav-item" href ="myprofile.php">Profile</a></li>
+             <li><a class="blog-nav-item" href="toBlog.php?user=$user">Blog</a></li>
+                  <li><a class="blog-nav-item" href ="userprofile.php?user=$user">Profile</a></li>
              <li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
              <li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
            </ul>
@@ -1435,10 +1432,11 @@ function findProfile($dbh,$user,$query) {
   $preparedquery = "SELECT $query FROM profile WHERE user = ?"; 
   $resultset = prepared_query($dbh,$preparedquery,$user); 
   $row = $resultset->fetchRow(MDB2_FETCHMODE_ASSOC);
+  $row2 = $row[$query];
   $size = $resultset -> numRows();
   if ($size > 0) {
     echo "
-      <div class='col-md-8'><h4>$row</h4></div>"; 
+      <div class='col-md-8'><h4>$row2</h4></div>"; 
   } else { 
       echo "";
     }
