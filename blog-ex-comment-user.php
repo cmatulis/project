@@ -16,6 +16,18 @@ $poster = $_COOKIE['304bloguserphp'];
   //  insertPost($dbh,$poster,$_POST['new_entry']);
 //}
 
+if (isSet($_POST['blogComment'])){
+	$insert = "insert into comments(entry_id, commenting_user, comment_text) values(?, ?, ?)";
+	$rows = prepared_statement($dbh, $insert, array($_POST['entryId'], $poster, $_POST['blogComment']));
+	$result = ($_POST['postAuthor'] == $poster);
+	if ($result == 1){
+  		printBlog($dbh, $poster);
+	}
+	else{
+		showBlog($dbh, $_POST['postAuthor'], $poster);
+	}
+
+}
 printBlog($dbh, $poster);
 //printPostings($dbh);
 
