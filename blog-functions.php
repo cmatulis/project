@@ -1359,6 +1359,8 @@ function signUp($dbh){
     } if (($do_usercheck == 0) && ($do_emailcheck ==0)) {
       $query = "INSERT into blog_user VALUES ('$username','$password',password('$password'),'$email')";
       $resultset = query($dbh,$query);
+      $profilequery = "INSERT into profile VALUES ('$username',NULL,NULL,NULL,NULL,NULL,NULL,NULL)";
+      query($dbh,$profilequery);
       if ($resultset) {
         echo "<h4> You are now registered. Click <a href=\"blog-ex-login-user.php\">here</a> to return to login page </h4>";
       }
@@ -1440,6 +1442,41 @@ function findProfile($dbh,$user,$query) {
   } else { 
       echo "";
     }
+}
+
+function saveInfo($dbh,$user) {
+  if (isset($_POST['submit'])) {
+  $fullname = $_POST['fullname'];
+  $birthdate = $_POST['birthdate'];
+  $city = $_POST['city'];
+  $state = $_POST['state'];
+  $country = $_POST['country'];
+  $interests = $_POST['interests'];
+  $profile = $_POST['aboutme'];
+
+  if(!empty($fullname)) {
+    prepared_query($dbh,"UPDATE profile SET fullname=$fullname WHERE user= ?",$user); 
+  }
+  if(!empty($birthdate)){
+    prepared_query($dbh,"UPDATE profile SET birthdate=$birthdate WHERE user= ?",$user); 
+  }
+  if(!empty($city)){
+    prepared_query($dbh,"UPDATE profile SET city=$city WHERE user= ?",$user); 
+  }
+  if(!empty($state)){
+    prepared_query($dbh,"UPDATE profile SET state=$state WHERE user= ?",$user); 
+  }
+  if(!empty($country)){
+    prepared_query($dbh,"UPDATE profile SET country=$country WHERE user= ?",$user); 
+  }
+  if(!empty($interests)){
+    prepared_query($dbh,"UPDATE profile SET interests=$interests WHERE user= ?",$user); 
+  } if(!empty($profile)){
+    prepared_query($dbh,"UPDATE profile SET profile=$profile WHERE user= ?",$user); 
+  }
+
+  echo "Changes saved!";
+}
 }
 
 

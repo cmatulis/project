@@ -2,18 +2,17 @@
 
 require_once("MDB2.php");
 require_once("/home/cs304/public_html/php/MDB2-functions.php");
-require_once("/students/cmatulis/public_html/project/blog-functions.php");
-require_once("/students/cmatulis/public_html/cs304/cmatulis-dsn.inc");
+require_once("/students/slee14/public_html/project/blog-functions.php");
+require_once("/students/slee14/public_html/cs304/slee14-dsn.inc");
 
-$dbh = db_connect($cmatulis_dsn);
+$dbh = db_connect($slee14_dsn);
 
 if(!isset($_COOKIE['304bloguserphp'])) {
     header('Location: blog-ex-login-user.php');
 }
 $user = $_GET['user'];
 ?> 
-<?php
-print <<<EOT
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -48,7 +47,10 @@ print <<<EOT
       <div class="container">
         <nav class="blog-nav">
           <ul class="nav navbar-nav">
-            <li><a class="blog-nav-item" href="toBlog.php?user=$user">Blog</a></li>
+            <li><a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a></li>
+            <li><a class="blog-nav-item" href = "postPage.php?type=">Post</a></li>
+            <li><a class="blog-nav-item" href="followersPage.php">Followers</a></li>
+            <li><a class="blog-nav-item" href="followingPage.php">Following</a></li>
             <li><a class="blog-nav-item" href ="#">Profile</a></li>
             <li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
             <li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
@@ -62,8 +64,7 @@ print <<<EOT
         </nav>
       </div>
     </div>
-EOT;
-?>
+
     <div class="container">
       <div class="blog-header">
         <?php echo "<h1 class='blog-title'>$user's Profile</h1>"; ?>
