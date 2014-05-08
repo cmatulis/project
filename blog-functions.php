@@ -1,28 +1,20 @@
 <?php
-  // Database operations
 
+// Database operations
 
+// inserts a text post into the database
 function insertPost($dbh, $poster, $entry, $title){
 	$insert = "INSERT INTO blog_entry(user, caption, title) VALUES (?, ?, ?)";
   	$rows = prepared_statement($dbh, $insert, array($poster, $entry, $title));
 }
 
+// inserts an image upload post into the database
 function insertUpload($dbh, $poster, $upload, $title, $caption){
   	$insert = "INSERT INTO blog_entry(user, entry, title, caption) VALUES (?, ?, ?, ?)";
   	$rows = prepared_statement($dbh, $insert, array($poster, $upload, $title, $caption));
 }
 
-function printPostings($dbh){
-  	echo "<P> Here are the five most recent postings within the last hour:";
-  	$resultset = $dbh->query("SELECT time(entered) as time, user, entry FROM blog_entry WHERE timestampdiff(minute, entered, now())<60 ORDER BY entered DESC LIMIT 5");
-  	//Get all the blog entries, including, presumably, the one just added, if any
-  	echo "<dl>\n";
-  	while ($row = $resultset -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-    		echo "<dt>" .$row['user'] . " at " .$row['time'] . "</dt><dd>" . $row['entry'] . "</dd>\n";
-  	}
-  	echo "</dl>\n";
-}
-
+// check to see if the username and password match something in the database
 function loginCredentialsAreOkay($dbh, $username, $password){
   	$check = "SELECT count(*) AS n FROM blog_user WHERE user = ? AND pass=?";
     	$resultset = prepared_query($dbh, $check, array($username,$password));
@@ -33,8 +25,8 @@ function loginCredentialsAreOkay($dbh, $username, $password){
 // ================================================================
 // printing stuff
 
-// This function prints a one-input form:  just the comment box
 
+// prints a form for uploading text posts
 function printCommentForm1()
 {
 print <<<EOT
@@ -61,6 +53,7 @@ print <<<EOT
 EOT;
 }
 
+// prints a form for uploading image files
 function printUploadForm()
 {
 print <<<EOT
@@ -93,9 +86,7 @@ EOT;
 }
 
 
-// This function prints a two-input form:  the poster box and the comment box
-
-
+// prints the login page
 function printPageHeader() {
 print <<<EOT
     		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -134,6 +125,7 @@ print <<<EOT
 EOT;
 }
 
+// prints the page that appears if the user enters an incorrect username/password combination
 function printPageHeader2() {
 print <<<EOT
     		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -173,6 +165,7 @@ print <<<EOT
 EOT;
 }
 
+// prints the page that appears once the user has successfully logged in
 function printNext($user){
 print <<<EOT
   		<div class = "jumbotron">
@@ -214,6 +207,7 @@ EOT;
 }
 
 
+// includes the CSS and js files that are necessary for each page 
 function printPageTop($title) {
 print <<<EOT
 		<!DOCTYPE html>
@@ -247,6 +241,7 @@ print <<<EOT
 EOT;
 }
 
+// prints the blog of the user who is currently logged in
 function printBlog($dbh, $user){
 print <<<EOT
 		<!DOCTYPE html>
@@ -483,6 +478,8 @@ print <<<EOT
 EOT;
 }
 
+
+// print the page where the user can choose whether the type of post they will upload
 function printPostPage(){
 print <<<EOT
 		<!DOCTYPE html>
@@ -551,7 +548,7 @@ print <<<EOT
 EOT;
 }
 
-
+// print the page that displays recent posts from all users
 function printAllPosts($dbh){
 print <<<EOT
 		<!DOCTYPE html>
@@ -675,7 +672,7 @@ EOT;
 }
 else if ($resultset4check == 0){
 	print <<<EOT
-			<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   <a href = "toBlog.php?entry_id=$id&posting_user=$user">Like</a>   </p>
+			<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   <a href = "viewAllPage.php?entry_id=$id&posting_user=$user">Like</a>   </p>
 
   					<!-- Modal -->
   					<div class="modal fade" id=$modaldivid tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -822,6 +819,7 @@ print <<<EOT
 EOT;
 }
 
+// prints the blog of a user who is not the currently-logged-in user
 function showBlog($dbh, $user, $user2){
 print <<<EOT
 		<!DOCTYPE html>
@@ -969,7 +967,33 @@ $currentuser = $_COOKIE['304bloguserphp'];
 			$resultset4check = $resultset4 -> numRows();
 			if ($resultset4check == 0){
 	print <<<EOT
-			<p><a href = "#">Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   <a href = "toBlog.php?entry_id=$id&posting_user=$usercol">Like</a>   </p>
+							<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
+					
+						<a href = "toBlog.php?entry_id=$id&posting_user=$usercol">Like</a>   </p>
+
+  					<!-- Modal -->
+  					<div class="modal fade" id=$modaldivid tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    						<div class="modal-dialog">
+      							<div class="modal-content">
+        							<div class="modal-header">
+          								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          								<h4 class="modal-title">Comment</h4>
+        							</div>
+        							<div class="modal-body">
+								<form class="form-horizontal" method="post" enctype = "multipart/form-data" action = "toBlog.php?user=$usercol">  
+          								<textarea name="blogComment" id = "blogComment" class="input-xlarge" rows="5" cols="60"></textarea>
+									<input type="hidden" value=$id name = "entryId" id="entryId" class="form-control">
+								       <input type="hidden" value=$user name = "postAuthor" id="postAuthor" class="form-control">
+        							</div>
+        							<div class="modal-footer">
+          								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          								<button type="submit" class="btn btn-primary">Submit Comment</button>
+        							</div>
+							</form>
+      							</div><!-- /.modal-content -->
+    						</div><!-- /.modal-dialog -->
+  					</div><!-- /.modal -->
+			
 EOT;
 }
 			else{
@@ -1114,6 +1138,8 @@ print <<<EOT
 EOT;
 }
 
+
+// prints a page showing the users that are currently following you
 function printFollowersPage($dbh, $user){
 print <<<EOT
 	<!DOCTYPE html>
@@ -1225,6 +1251,7 @@ print <<<EOT
 EOT;
 }
 
+// prints the page displaying the users that you are currently following
 function printFollowingPage($dbh, $user){
 print <<<EOT
 	<!DOCTYPE html>
@@ -1338,6 +1365,7 @@ EOT;
 
 }
 
+// print the sign up page
 function signUp($dbh){
   if (isset ($_POST['username']) && isset($_POST['password'])) {
     $username = $_POST['username'];
@@ -1367,6 +1395,7 @@ function signUp($dbh){
   }
 }
 
+// search for posts
 function post($query,$dbh) {
   $self = $_SERVER['PHP_SELF']; 
   $preparedquery = "SELECT * FROM blog_entry WHERE caption LIKE ? OR title LIKE ?"; 
@@ -1406,6 +1435,7 @@ function post($query,$dbh) {
   }
 }
 
+// search for users
 function user($query,$dbh) {
   $self = $_SERVER['PHP_SELF'];
   $preparedquery = "SELECT user from blog_user WHERE user LIKE ?"; 
@@ -1428,6 +1458,7 @@ function user($query,$dbh) {
   }
 }
 
+// search by profile
 function findProfile($dbh,$user,$query) {
   $preparedquery = "SELECT $query FROM profile WHERE user = ?"; 
   $resultset = prepared_query($dbh,$preparedquery,$user); 
