@@ -11,8 +11,6 @@ if(!isset($_COOKIE['304bloguserphp'])) {
     header('Location: blog-ex-login-user.php');
 }
 $user = $_COOKIE['304bloguserphp'];
-
-saveInfo($dbh,$user)
 ?> 
 
 <!DOCTYPE html>
@@ -71,39 +69,57 @@ saveInfo($dbh,$user)
       <div class="blog-header">
         <?php echo "<h1 class='blog-title'>$user's Profile</h1>";
            ?>
-<p></p>
-<a href="myprofileUpdate.php" class="btn btn-primary btn-med" role="button">Change Settings</a>
 
       </div>
       <br>
+	<?php
+ 	$preparedquery = "SELECT * from profile where user = ?";
+  	//Get all the blog entries, including, presumably, the one just added, if any
+	$resultset = prepared_query($dbh, $preparedquery, $user);
+	while ($row = $resultset -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+		$fullname = $row['fullname'];
+		$birthdate = $row['birthdate'];
+		$city = $row['city'];
+		$state = $row['state'];
+		$country = $row['country'];
+		$interests = $row['interests'];
+		$aboutme = $row['profile'];
+	}
+	print <<<EOT
+
+	<form class="form-horizontal" method="post" enctype = "multipart/form-data" action = "myprofile.php">  
       <div class="row">
       	<div class="col-md-3"><h4><strong>Full Name</strong></h4></div>
-      	<?php echo findProfile($dbh,$user,"fullname"); ?>
+      	 <input type='text' name = 'fullname' value = $fullname>
       </div>  
       <div class="row">
       	<div class="col-md-3"><h4><strong>Birthdate</strong></h4></div>
-      	<?php echo findProfile($dbh,$user,"birthdate"); ?>
+      	<input type='text' name = 'birthdate' value = $birthdate>
       </div>
       <div class="row">
       	<div class="col-md-3"><h4><strong>City</strong></h4></div>
-      	<?php echo findProfile($dbh,$user,"city"); ?>
+      	<input type='text' name = 'city' value = $city>
       </div>
       <div class="row">
       	<div class="col-md-3"><h4><strong>State</strong></h4></div>
-      	<?php echo findProfile($dbh,$user,"state"); ?>
+      	<input type='text' name = 'state' value = '$state'>
       </div>
       <div class="row">
       	<div class="col-md-3"><h4><strong>Country</strong></h4></div>
-      	<?php echo findProfile($dbh,$user,"country"); ?>
+      	<input type='text' name = 'country' value = $country>
       </div>
       <div class="row">
       	<div class="col-md-3"><h4><strong>Interests</strong></h4></div>
-      	<?php echo findProfile($dbh,$user,"interests"); ?>
+      	<input type='text' name = 'interests' value = $interests>
       </div>
-      <div class="row">
+	<div class="row">
       	<div class="col-md-3"><h4><strong>About Me</strong></h4></div>
-      	<?php echo findProfile($dbh,$user,"profile"); ?>
+      	<input type='text' name = 'aboutme' value = $aboutme>
+      </div> 
+      <div class="row">
+      	<button type="submit" class="btn btn-primary">Save Changes</button>  
       </div>  
+	</form>
     </div> <!-- container -->
 
     <script src="http://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.2/html5shiv.js"></script>
@@ -112,6 +128,7 @@ saveInfo($dbh,$user)
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0-rc2/js/bootstrap.min.js"></script>
-
+EOT;
+?>
 </body>
 </html>
