@@ -13,7 +13,7 @@ if(!isset($_COOKIE['304bloguserphp'])){
 
 $poster = $_COOKIE['304bloguserphp'];
 
-printPageTop('Blog304: Login');
+printPageTop('Home');
 printNext($poster);
 
 ?>

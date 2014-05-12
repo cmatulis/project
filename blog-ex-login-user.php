@@ -19,18 +19,18 @@ if(isset($_POST['user'])) {
        	} 
     	} 
 	else {
-        	printPageTop('Blog 304: Login');
+        	printPageTop('Poster');
 		printPageHeader2();
     	}
 }
 
 else{
-	printPageTop('Blog 304: Login');
+	printPageTop('Poster');
 	printPageHeader();
 }
 
 if ($resultid == 1){
-  	printPageTop('Blog 304: Login');
+  	printPageTop('Poster');
 	printNext($user);
 }
 

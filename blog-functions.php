@@ -88,6 +88,21 @@ EOT;
 
 // prints the login page
 function printPageHeader() {
+	printLoginForm();
+
+	print <<<EOT
+    		<div class="jumbotron">
+      			<div class="container">
+        			<h1>Welcome!</h1>
+        			<p>Poster is a blogging website.  Click below to sign up.</p>
+        			<p><a href="signUpPage.php" class="btn btn-primary btn-lg" role="button">Sign Up</a>
+      			</div>
+    		</div>
+EOT;
+}
+
+// prints the username/password form that appears at the top of the login page
+function printLoginForm(){
 print <<<EOT
     		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       			<div class="container">
@@ -113,47 +128,25 @@ print <<<EOT
         			</div><!--/.navbar-collapse -->
       			</div>
     		</div>
-    
-		<!-- Main jumbotron for a primary marketing message or call to action -->
-    		<div class="jumbotron">
-      			<div class="container">
-        			<h1>Welcome!</h1>
-        			<p>Poster is a blogging website.  Click below to sign up.</p>
-        			<p><a href="signUpPage.php" class="btn btn-primary btn-lg" role="button">Sign Up</a>
-      			</div>
-    		</div>
+EOT;
+}
+
+function printSearchForm(){
+print <<<EOT
+	<form class="navbar-form navbar-right" role="search" action=searchResults.php>
+             	<div class="form-group">
+               	<input type="text" class="form-control" placeholder="Search" name="searchentry" required>
+             	</div>
+            	<button type="submit" class="btn btn-default">Submit</button>
+        </form>
 EOT;
 }
 
 // prints the page that appears if the user enters an incorrect username/password combination
 function printPageHeader2() {
-print <<<EOT
-    		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      			<div class="container">
-        			<div class="navbar-header">
-          				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            					<span class="sr-only">Toggle navigation</span>
-            					<span class="icon-bar"></span>
-            					<span class="icon-bar"></span>
-            					<span class="icon-bar"></span>
-          				</button>
-          				<a class="navbar-brand" href="#">Poster</a>
-        			</div>
-      
+	printLoginForm();
 
-       			<div class="navbar-collapse collapse">
-          				<form class="navbar-form navbar-right" method = 'post' action = "blog-ex-login-user.php" role="form">
-            					<div class="form-group">
-              					<input type="text" placeholder="Username" name = "user" id = "user" class="form-control">
-            					</div>
-            					<div class="form-group">
-              					<input type="password" placeholder="Password" name = "pass" id="pass" class="form-control">
-            					</div>
-            					<button type="submit" class="btn btn-success">Sign in</button>
-          				</form>
-        			</div><!--/.navbar-collapse -->
-      			</div>
-    		</div>
+	print <<<EOT
 		<!-- Main jumbotron for a primary marketing message or call to action -->
     		<div class="jumbotron">
       			<div class="container">
@@ -176,7 +169,6 @@ print <<<EOT
 		</div>
 
     		<div class="container">
-      			<!-- Example row of columns -->
       			<div class="row">
         			<div class="col-md-4">
           				<h2>Your Blog</h2>
@@ -196,13 +188,6 @@ print <<<EOT
         		<p><a class = "blog-nav-item" href = "logoutPage.php">Logout</a></p>
       			</footer>
     		</div> <!-- /container -->
-
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="../../dist/js/bootstrap.min.js"></script>
 EOT;
 }
 
@@ -220,13 +205,15 @@ print <<<EOT
     			<meta name="author" content="">
     			<link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
-    			<title>Poster</title>
+    			<title>$title</title>
 
     			<!-- Bootstrap core CSS -->
     			<link href="bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
 
     			<!-- Custom styles for this template -->
     			<link href="jumbotron.css" rel="stylesheet">
+			<!-- Custom styles for this template -->
+    			<link href="bootstrap-3.1.1-dist/css/blog.css" rel="stylesheet"> 
 
     			<!-- Just for debugging purposes. Don''t actually copy this line! -->
     			<!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -236,6 +223,9 @@ print <<<EOT
       				<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       				<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     			<![endif]-->
+			<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+			<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+			<script src="bootstrap-3.1.1-dist/js/bootstrap-modal.js"></script>
   		</head>
 		<body>
 EOT;
@@ -243,70 +233,34 @@ EOT;
 
 // prints the blog of the user who is currently logged in
 function printBlog($dbh, $user){
+	printPageTop('Blog');
+	print <<<EOT
+    		<div class="blog-masthead">
+       		<div class="container">
+         			<nav class="blog-nav">
+           				<ul class="nav navbar-nav">
+             					<li><a class="blog-nav-item active" href="#">Blog</a></li>
+             					<li><a class="blog-nav-item" href = "postPage.php?type=">Post</a></li>
+             					<li><a class="blog-nav-item" href="followersPage.php">Followers</a></li>
+             					<li><a class="blog-nav-item" href="followingPage.php">Following</a></li>
+             					<li><a class="blog-nav-item" href ="myprofile.php">Profile</a></li>
+             					<li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
+             					<li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
+           				</ul>
+EOT;
+printSearchForm();
 print <<<EOT
-		<!DOCTYPE html>
-		<html lang="en">
-  		<head>
-    			<meta charset="utf-8">
-    			<meta http-equiv="X-UA-Compatible" content="IE=edge">
-    			<meta name="viewport" content="width=device-width, initial-scale=1">
-    			<meta name="description" content="">
-    			<meta name="author" content="">
-    			<link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+        			</nav>
+      			</div>
+    		</div>
 
-    			<title>Blog</title>
-
-    			<!-- Bootstrap core CSS -->
-    			<link href="bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
-
-			<!-- Custom styles for this template -->
-    			<link href="bootstrap-3.1.1-dist/css/blog.css" rel="stylesheet"> 
-				  
-    			<!-- Just for debugging purposes. Don''t actually copy this line! -->
-    			<!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
-    			<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    			<!--[if lt IE 9]>
-      			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    			<![endif]-->
-			<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-			<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-			<script src="bootstrap-3.1.1-dist/js/bootstrap-modal.js"></script>
-				  
-  		</head>
-
-  		<body>
-
-    			<div class="blog-masthead">
-       <div class="container">
-         <nav class="blog-nav">
-           <ul class="nav navbar-nav">
-             <li><a class="blog-nav-item active" href="#">Blog</a></li>
-             <li><a class="blog-nav-item" href = "postPage.php?type=">Post</a></li>
-             <li><a class="blog-nav-item" href="followersPage.php">Followers</a></li>
-             <li><a class="blog-nav-item" href="followingPage.php">Following</a></li>
-             <li><a class="blog-nav-item" href ="myprofile.php">Profile</a></li>
-             <li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
-             <li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
-           </ul>
-           <form class="navbar-form navbar-right" role="search" action=searchResults.php>
-             <div class="form-group">
-               <input type="text" class="form-control" placeholder="Search" name="searchentry" required>
-             </div>
-            <button type="submit" class="btn btn-default">Submit</button>
-          </form>
-        </nav>
-      </div>
-    </div>
-
-    <div class="container">
-      <div class="blog-header">
-        <h1 class="blog-title">$user</h1>
-        <p class="lead blog-description">Blog description goes here</p>
-      </div>
-      <div class="row">
-      <div class="col-sm-8 blog-main">
+    		<div class="container">
+      			<div class="blog-header">
+        			<h1 class="blog-title">$user</h1>
+        			<!-- <p class="lead blog-description">Blog description goes here</p> -->
+      			</div>
+      			<div class="row">
+      			<div class="col-sm-8 blog-main">
 EOT;
 	$profile = '';
 	$preparedquery1 = "SELECT profile FROM profile where user = ?";
@@ -460,89 +414,40 @@ print <<<EOT
       		</div><!-- /.row -->
 
     		</div><!-- /.container -->
-
-    		<div class="blog-footer">
-      			<p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
-      			<p>
-        			<a href="#">Back to top</a>
-      			</p>
-    		</div>
-
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="../../dist/js/bootstrap.min.js"></script>
-    <script src="../../assets/js/docs.min.js"></script>
 EOT;
+printBlogFooter();
 }
 
 
 // print the page where the user can choose whether the type of post they will upload
 function printPostPage(){
-print <<<EOT
-		<!DOCTYPE html>
-		<html lang="en">
-  		<head>
-    			<meta charset="utf-8">
-    			<meta http-equiv="X-UA-Compatible" content="IE=edge">
-    			<meta name="viewport" content="width=device-width, initial-scale=1">
-    			<meta name="description" content="">
-    			<meta name="author" content="">
-    			<link rel="shortcut icon" href="../../assets/ico/favicon.ico">
-
-    			<title>Post</title>
-
-    			<!-- Bootstrap core CSS -->
-    			<link href="bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
-
-			<!-- Custom styles for this template -->
-    			<link href="bootstrap-3.1.1-dist/css/blog.css" rel="stylesheet"> 
-				  
-    			<!-- Just for debugging purposes. Don''t actually copy this line! -->
-    			<!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
-    			<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    			<!--[if lt IE 9]>
-      			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    			<![endif]-->
-				  
-  		</head>
-
-  		<body>
-
+	printPageTop('Post');
+	print <<<EOT
     		<div class="blog-masthead">
-       <div class="container">
-         <nav class="blog-nav">
-           <ul class="nav navbar-nav">
-             <li><a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a></li>
-             <li><a class="blog-nav-item active" href = "postPage.php?type=">Post</a></li>
-             <li><a class="blog-nav-item" href="followersPage.php">Followers</a></li>
-             <li><a class="blog-nav-item" href="followingPage.php">Following</a></li>
-             <li><a class="blog-nav-item" href ="myprofile.php">Profile</a></li>
-             <li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
-             <li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
-           </ul>
-           <form class="navbar-form navbar-right" role="search" action=searchResults.php>
-             <div class="form-group">
-               <input type="text" class="form-control" placeholder="Search" name="searchentry" required>
-             </div>
-            <button type="submit" class="btn btn-default">Submit</button>
-          </form>
-        </nav>
-      </div>
-    </div>
+       		<div class="container">
+         			<nav class="blog-nav">
+           				<ul class="nav navbar-nav">
+             					<li><a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a></li>
+             					<li><a class="blog-nav-item active" href = "postPage.php?type=">Post</a></li>
+             					<li><a class="blog-nav-item" href="followersPage.php">Followers</a></li>
+             					<li><a class="blog-nav-item" href="followingPage.php">Following</a></li>
+             					<li><a class="blog-nav-item" href ="myprofile.php">Profile</a></li>
+             					<li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
+             					<li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
+           				</ul>
+EOT;
+printSearchForm();
+print <<<EOT
+        			</nav>
+      			</div>
+    		</div>
 
 EOT;
-print <<<EOT
+	print <<<EOT
     		<div class="container">
-
-      			<div class="blog-header">
+			<div class="blog-header">
         			<p class="lead blog-description">Select the type of post, and then submit your new post to your blog.</p>
       			</div>
-
 			<a href="postPage.php?type=text" class="btn btn-default btn-med" role="button"><span class="glyphicon glyphicon-font"></span> Text</a>
 			<a href="postPage.php?type=upload" class="btn btn-default btn-med" role="button"><span class="glyphicon glyphicon-upload"></span> Upload</a>
 EOT;
@@ -550,70 +455,33 @@ EOT;
 
 // print the page that displays recent posts from all users
 function printAllPosts($dbh){
-print <<<EOT
-		<!DOCTYPE html>
-		<html lang="en">
-  		<head>
-    			<meta charset="utf-8">
-    			<meta http-equiv="X-UA-Compatible" content="IE=edge">
-    			<meta name="viewport" content="width=device-width, initial-scale=1">
-    			<meta name="description" content="">
-    			<meta name="author" content="">
-    			<link rel="shortcut icon" href="../../assets/ico/favicon.ico">
-
-    			<title>Recent</title>
-
-    			<!-- Bootstrap core CSS -->
-    			<link href="bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
-			
-
-			<!-- Custom styles for this template -->
-    			<link href="bootstrap-3.1.1-dist/css/blog.css" rel="stylesheet"> 
-				  
-    			<!-- Just for debugging purposes. Don''t actually copy this line! -->
-    			<!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
-    			<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    			<!--[if lt IE 9]>
-      			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    			<![endif]-->
-			<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-			<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-				  
-  		</head>
-
-  		<body>
-
+	printPageTop('Recent');
+	print <<<EOT
     		<div class="blog-masthead">
-       <div class="container">
-         <nav class="blog-nav">
-           <ul class="nav navbar-nav">
-		  <li><a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a></li>
-                <li><a class="blog-nav-item" href = "postPage.php?type=">Post</a></li>
-                <li><a class="blog-nav-item" href="followersPage.php">Followers</a></li>
-                <li><a class="blog-nav-item" href="followingPage.php">Following</a></li>
-                <li><a class="blog-nav-item" href ="myprofile.php">Profile</a></li>
-             <li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
-             <li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
-           </ul>
-           <form class="navbar-form navbar-right" role="search" action=searchResults.php>
-             <div class="form-group">
-               <input type="text" class="form-control" placeholder="Search" name="searchentry" required>
-             </div>
-            <button type="submit" class="btn btn-default">Submit</button>
-          </form>
-        </nav>
-      </div>
-    </div>
+       		<div class="container">
+         			<nav class="blog-nav">
+           				<ul class="nav navbar-nav">
+		  				<li><a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a></li>
+                				<li><a class="blog-nav-item" href = "postPage.php?type=">Post</a></li>
+                				<li><a class="blog-nav-item" href="followersPage.php">Followers</a></li>
+                				<li><a class="blog-nav-item" href="followingPage.php">Following</a></li>
+                				<li><a class="blog-nav-item" href ="myprofile.php">Profile</a></li>
+             					<li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
+             					<li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
+           				</ul>
+EOT;
+printSearchForm();
+print <<<EOT
+        			</nav>
+      			</div>
+    		</div>
 
-
-    			<div class="container">
-      				<div class="row">
-					<div class="col-sm-8 blog-main">
- 						<div class="blog-header">
-        						<p class="lead blog-description">The most recent posts from all users.</p>
-      						</div>
+		<div class="container">
+      			<div class="row">
+				<div class="col-sm-8 blog-main">
+ 					<div class="blog-header">
+        					<p class="lead blog-description">The most recent posts from all users.</p>
+      					</div>
 EOT;
 
   	$resultset2 = $dbh->query("SELECT * from blog_entry ORDER BY entered DESC LIMIT 20");
@@ -801,77 +669,29 @@ print <<<EOT
       		</div><!-- /.row -->
 
     		</div><!-- /.container -->
-
-    		<div class="blog-footer">
-      			<p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
-      			<p>
-        			<a href="#">Back to top</a>
-      			</p>
-    		</div>
-
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="../../dist/js/bootstrap.min.js"></script>
-    <script src="../../assets/js/docs.min.js"></script>
 EOT;
+
+printBlogFooter();
 }
 
 // prints the blog of a user who is not the currently-logged-in user
 function showBlog($dbh, $user, $user2){
+	printPageTop('Blog');
+	print <<<EOT
+		<div class="blog-masthead">
+       		<div class="container">
+         			<nav class="blog-nav">
+           				<ul class="nav navbar-nav">
+             					<li><a class="blog-nav-item" href="toBlog.php?user=$user">Blog</a></li>
+                  				<li><a class="blog-nav-item" href ="userprofile.php?user=$user">Profile</a></li>
+             					<li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
+             					<li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
+           				</ul>
+EOT;
+printSearchForm();
 print <<<EOT
-		<!DOCTYPE html>
-		<html lang="en">
-  		<head>
-    			<meta charset="utf-8">
-    			<meta http-equiv="X-UA-Compatible" content="IE=edge">
-    			<meta name="viewport" content="width=device-width, initial-scale=1">
-    			<meta name="description" content="">
-    			<meta name="author" content="">
-    			<link rel="shortcut icon" href="../../assets/ico/favicon.ico">
-    			<title>Blog</title>
-
-    			<!-- Bootstrap core CSS -->
-   			<link href="bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
-
-			<!-- Custom styles for this template -->
-    			<link href="bootstrap-3.1.1-dist/css/blog.css" rel="stylesheet"> 
-				  
-    			<!-- Just for debugging purposes. Don''t actually copy this line! -->
-    			<!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
-    			<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    			<!--[if lt IE 9]>
-      			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    			<![endif]-->
-			<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-			<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-				  
-  		</head>
-
-  		<body>
-			    
-    			<div class="blog-masthead">
-       <div class="container">
-         <nav class="blog-nav">
-           <ul class="nav navbar-nav">
-             <li><a class="blog-nav-item" href="toBlog.php?user=$user">Blog</a></li>
-                  <li><a class="blog-nav-item" href ="userprofile.php?user=$user">Profile</a></li>
-             <li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
-             <li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
-           </ul>
-           <form class="navbar-form navbar-right" role="search" action=searchResults.php>
-             <div class="form-group">
-               <input type="text" class="form-control" placeholder="Search" name="searchentry" required>
-             </div>
-            <button type="submit" class="btn btn-default">Submit</button>
-          </form>
-        </nav>
-      </div>
-    </div>
+      			</div>
+    		</div>
 
 EOT;
 	$result = 0;
@@ -1120,59 +940,16 @@ print <<<EOT
       			</div><!-- /.row -->
 
     			</div><!-- /.container -->
-
-    			<div class="blog-footer">
-      				<p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
-      				<p>
-        				<a href="#">Back to top</a>
-      				</p>
-    			</div>
-
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="../../dist/js/bootstrap.min.js"></script>
-    <script src="../../assets/js/docs.min.js"></script>
 EOT;
+
+printBlogFooter();
 }
 
 
 // prints a page showing the users that are currently following you
 function printFollowersPage($dbh, $user){
+printPageTop('Followers');
 print <<<EOT
-	<!DOCTYPE html>
-	<html lang="en">
-  	<head>
-    		<meta charset="utf-8">
-    		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-    		<meta name="viewport" content="width=device-width, initial-scale=1">
-    		<meta name="description" content="">
-    		<meta name="author" content="">
-    		<link rel="shortcut icon" href="../../assets/ico/favicon.ico">
-
-    		<title>Followers</title>
-
-    		<!-- Bootstrap core CSS -->
-    		<link href="bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
-
-		<!-- Custom styles for this template -->
-    		<link href="bootstrap-3.1.1-dist/css/blog.css" rel="stylesheet"> 
-				  
-    		<!-- Just for debugging purposes. Don''t actually copy this line! -->
-    		<!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
-
-    		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    		<!--[if lt IE 9]>
-      		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    		<![endif]-->
-				  
-  	</head>
-
-  	<body>
 			    
     		<div class="blog-masthead">
        <div class="container">
@@ -1186,12 +963,9 @@ print <<<EOT
              <li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
              <li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
            </ul>
-           <form class="navbar-form navbar-right" role="search" action=searchResults.php>
-             <div class="form-group">
-               <input type="text" class="form-control" placeholder="Search" name="searchentry" required>
-             </div>
-            <button type="submit" class="btn btn-default">Submit</button>
-          </form>
+EOT;
+printSearchForm();
+print <<<EOT
         </nav>
       </div>
     </div>
@@ -1231,58 +1005,24 @@ EOT;
 print <<<EOT
 		</div><!-- /.blog-main -->  
     		</div><!-- /.container -->
-
-    		<div class="blog-footer">
-      			<p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
-      			<p>
-        			<a href="#">Back to top</a>
-      			</p>
-    		</div>
-
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="../../dist/js/bootstrap.min.js"></script>
-    <script src="../../assets/js/docs.min.js"></script>
-
-
 EOT;
+printBlogFooter();
 }
 
+function printBlogFooter(){
+print <<<EOT
+	<div class="blog-footer">
+      		<p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+      		<p>
+        		<a href="#">Back to top</a>
+      		</p>
+    	</div>
+EOT;
+}
 // prints the page displaying the users that you are currently following
 function printFollowingPage($dbh, $user){
+printPageTop('Following');
 print <<<EOT
-	<!DOCTYPE html>
-	<html lang="en">
-  	<head>
-    		<meta charset="utf-8">
-    		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-    		<meta name="viewport" content="width=device-width, initial-scale=1">
-    		<meta name="description" content="">
-    		<meta name="author" content="">
-    		<link rel="shortcut icon" href="../../assets/ico/favicon.ico">
-
-    		<title>Following</title>
-
-    		<!-- Bootstrap core CSS -->
-    		<link href="bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="stylesheet">
-		<!-- Custom styles for this template -->
-    		<link href="bootstrap-3.1.1-dist/css/blog.css" rel="stylesheet"> 
-				  
-    		<!-- Just for debugging purposes. Don''t actually copy this line! -->
-    		<!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
-    		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    		<!--[if lt IE 9]>
-      		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    		<![endif]-->
-				  
-  	</head>
-
-  	<body>
 			    
     		<div class="blog-masthead">
        <div class="container">
@@ -1296,12 +1036,9 @@ print <<<EOT
              <li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
              <li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
            </ul>
-           <form class="navbar-form navbar-right" role="search" action=searchResults.php>
-             <div class="form-group">
-               <input type="text" class="form-control" placeholder="Search" name="searchentry" required>
-             </div>
-            <button type="submit" class="btn btn-default">Submit</button>
-          </form>
+EOT;
+printSearchForm();
+print <<<EOT
         </nav>
       </div>
     </div>
@@ -1344,24 +1081,9 @@ EOT;
 print <<<EOT
 		</div><!-- /.blog-main -->  
     		</div><!-- /.container -->
-
-    		<div class="blog-footer">
-      			<p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
-      			<p>
-        			<a href="#">Back to top</a>
-      			</p>
-    		</div>
-
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="../../dist/js/bootstrap.min.js"></script>
-    <script src="../../assets/js/docs.min.js"></script>
-
-
 EOT;
+
+printBlogFooter();
 
 }
 
