@@ -93,6 +93,7 @@ function printPageHeader() {
 	print <<<EOT
     		<div class="jumbotron">
       			<div class="container">
+				<p></p>
         			<h1>Welcome!</h1>
         			<p>Poster is a blogging website.  Click below to sign up.</p>
         			<p><a href="signUpPage.php" class="btn btn-primary btn-lg" role="button">Sign Up</a>
@@ -231,6 +232,82 @@ print <<<EOT
 EOT;
 }
 
+function printCommentModal($modaldivid, $action, $id, $usercol){
+	print <<<EOT
+		<!-- Modal -->
+  			<div class="modal fade" id=$modaldivid tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    				<div class="modal-dialog">
+      					<div class="modal-content">
+        					<div class="modal-header">
+          						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          						<h4 class="modal-title">Comment</h4>
+        					</div>
+        					<div class="modal-body">
+							<form class="form-horizontal" method="post" enctype = "multipart/form-data" action = $action>  
+          							<textarea name="blogComment" id = "blogComment" class="input-xlarge" rows="5" cols="60"></textarea>
+								<input type="hidden" value=$id name = "entryId" id="entryId" class="form-control">
+								<input type="hidden" value=$usercol name = "postAuthor" id="postAuthor" class="form-control">
+        					</div>
+        					<div class="modal-footer">
+          						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          						<button type="submit" class="btn btn-primary">Submit Comment</button>
+        					</div>
+							</form>
+      					</div><!-- /.modal-content -->
+    				</div><!-- /.modal-dialog -->
+  			</div><!-- /.modal -->
+
+EOT;
+}
+
+function printViewComments($commentshrefid, $commentsdivid, $dbh, $id){
+print <<<EOT
+	<div class="panel-group" id="accordion">
+  		<div class="panel panel-default">
+    			<div class="panel-heading">
+      				<h4 class="panel-title">
+        				<a data-toggle="collapse" data-parent="#accordion" href=$commentshrefid>
+          					View Comments
+        				</a>
+      				</h4>
+    			</div>
+    		<div id=$commentsdivid class="panel-collapse collapse">
+      	<div class="panel-body">
+EOT;
+	$preparedquery3 = "select * from comments where entry_id = ? order by date(comment_time) desc, time(comment_time) desc";
+	$resultset3 = prepared_query($dbh, $preparedquery3, $id);
+	while ($row3 = $resultset3 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+		$comment_text = $row3['comment_text'];
+		$commenting_user = $row3['commenting_user'];
+		print <<<EOT
+       		<p><a href="toBlog.php?user=$commenting_user">$commenting_user</a> said: $comment_text </p>
+EOT;
+}
+}
+
+function printViewLikes($hrefid, $divid, $dbh, $id){
+	print <<<EOT
+  		<div class="panel-group" id="accordion2">
+			<div class="panel panel-default">
+    				<div class="panel-heading">
+      					<h4 class="panel-title">
+        					<a data-toggle="collapse" data-parent="#accordion2" href=$hrefid>
+          						View Likes
+        					</a>
+      					</h4>
+    				</div>
+    			<div id=$divid class="panel-collapse collapse">
+      		<div class="panel-body">
+EOT;
+	$preparedquery3 = "select * from likes where entry_id = ? order by date(like_time) desc, time(like_time) desc";
+	$resultset3 = prepared_query($dbh, $preparedquery3, $id);
+	while ($row3 = $resultset3 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+		$likinguser = $row3['liking_user'];
+		print <<<EOT
+			<p><a href="toBlog.php?user=$likinguser">$likinguser</a> liked this </p>
+EOT;
+	}
+}
 // prints the blog of the user who is currently logged in
 function printBlog($dbh, $user){
 	printPageTop('Blog');
@@ -294,54 +371,11 @@ print <<<EOT
 					<p> <img src='$image'> </p>
             				<p> $entry </p> 
 					<a data-toggle="modal" href=$modalhrefid>Comment</a>
-
-  					<!-- Modal -->
-  					<div class="modal fade" id=$modaldivid tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    						<div class="modal-dialog">
-      							<div class="modal-content">
-        							<div class="modal-header">
-          								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          								<h4 class="modal-title">Comment</h4>
-        							</div>
-        							<div class="modal-body">
-								<form class="form-horizontal" method="post" enctype = "multipart/form-data" action = "blog-ex-comment-user.php">  
-          								<textarea name="blogComment" id = "blogComment" class="input-xlarge" rows="5" cols="60"></textarea>
-									<input type="hidden" value=$id name = "entryId" id="entryId" class="form-control">
-								       <input type="hidden" value=$usercol name = "postAuthor" id="postAuthor" class="form-control">
-        							</div>
-        							<div class="modal-footer">
-          								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          								<button type="submit" class="btn btn-primary">Submit Comment</button>
-        							</div>
-							</form>
-      							</div><!-- /.modal-content -->
-    						</div><!-- /.modal-dialog -->
-  					</div><!-- /.modal -->
 					
 EOT;
-	print <<<EOT
-				<div class="panel-group" id="accordion">
 
-  					<div class="panel panel-default">
-    						<div class="panel-heading">
-      							<h4 class="panel-title">
-        							<a data-toggle="collapse" data-parent="#accordion" href=$commentshrefid>
-          								View Comments
-        							</a>
-      							</h4>
-    						</div>
-    						<div id=$commentsdivid class="panel-collapse collapse">
-      							<div class="panel-body">
-EOT;
-$preparedquery3 = "select * from comments where entry_id = ? order by date(comment_time) desc, time(comment_time) desc";
-						$resultset3 = prepared_query($dbh, $preparedquery3, $id);
-							while ($row3 = $resultset3 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-		$comment_text = $row3['comment_text'];
-		$commenting_user = $row3['commenting_user'];
-print <<<EOT
-       							<p><a href="toBlog.php?user=$commenting_user">$commenting_user</a> said: $comment_text </p>
-EOT;
-}	
+printCommentModal($modaldivid, 'blog-ex-comment-user.php', $id, $usercol); 
+printViewComments($commentshrefid, $commentsdivid, $dbh, $id);	
 
 print <<<EOT
       							</div>
@@ -349,27 +383,7 @@ print <<<EOT
   					</div>
 				</div>
 EOT;
-print <<<EOT
-  				<div class="panel-group" id="accordion2">
-				<div class="panel panel-default">
-    					<div class="panel-heading">
-      						<h4 class="panel-title">
-        						<a data-toggle="collapse" data-parent="#accordion2" href=$hrefid>
-          							View Likes
-        						</a>
-      						</h4>
-    					</div>
-    					<div id=$divid class="panel-collapse collapse">
-      						<div class="panel-body">
-EOT;
-						$preparedquery3 = "select * from likes where entry_id = ? order by date(like_time) desc, time(like_time) desc";
-						$resultset3 = prepared_query($dbh, $preparedquery3, $id);
-							while ($row3 = $resultset3 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-		$likinguser = $row3['liking_user'];
-print <<<EOT
-       						<p><a href="toBlog.php?user=$likinguser">$likinguser</a> liked this </p>
-EOT;
-}
+printViewLikes($hrefid, $divid, $dbh, $id);
 print <<<EOT
       						</div>
     					</div>
@@ -511,114 +525,31 @@ $currentuser = $_COOKIE['304bloguserphp'];
 			$resultset4 = prepared_query($dbh, $preparedquery4, array($id, $currentuser));
 			$resultset4check = $resultset4 -> numRows();
 			if ($resultset4check == 0 & !strcmp($user, $currentuser)){
-	print <<<EOT
-				<a data-toggle="modal" href=$modalhrefid>Comment</a>
-
-  					<!-- Modal -->
-  					<div class="modal fade" id=$modaldivid tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    						<div class="modal-dialog">
-      							<div class="modal-content">
-        							<div class="modal-header">
-          								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          								<h4 class="modal-title">Comment</h4>
-        							</div>
-        							<div class="modal-body">
-								<form class="form-horizontal" method="post" enctype = "multipart/form-data" action = "viewAllPage.php">  
-          								<textarea name="blogComment" id = "blogComment" class="input-xlarge" rows="5" cols="60"></textarea>
-									<input type="hidden" value=$id name = "entryId" id="entryId" class="form-control">
-								       <input type="hidden" value=$user name = "postAuthor" id="postAuthor" class="form-control">
-        							</div>
-        							<div class="modal-footer">
-          								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          								<button type="submit" class="btn btn-primary">Submit Comment</button>
-        							</div>
-							</form>
-      							</div><!-- /.modal-content -->
-    						</div><!-- /.modal-dialog -->
-  					</div><!-- /.modal -->
+				print <<<EOT
+					<a data-toggle="modal" href=$modalhrefid>Comment</a>
 EOT;
+				printCommentModal($modaldivid, 'viewAllPage.php', $id, $user);
+				printViewComments($commentshrefid, $commentsdivid, $dbh, $id);
 }
-else if ($resultset4check == 0){
-	print <<<EOT
-			<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   <a href = "viewAllPage.php?entry_id=$id&posting_user=$user">Like</a>   </p>
+			else if ($resultset4check == 0){
+				print <<<EOT
+					<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   <a href = "viewAllPage.php?entry_id=$id&posting_user=$user">Like</a>   </p>
 
-  					<!-- Modal -->
-  					<div class="modal fade" id=$modaldivid tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    						<div class="modal-dialog">
-      							<div class="modal-content">
-        							<div class="modal-header">
-          								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          								<h4 class="modal-title">Comment</h4>
-        							</div>
-        							<div class="modal-body">
-								<form class="form-horizontal" method="post" enctype = "multipart/form-data" action = "toBlog.php">  
-          								<textarea name="blogComment" id = "blogComment" class="input-xlarge" rows="5" cols="60"></textarea>
-									<input type="hidden" value=$id name = "entryId" id="entryId" class="form-control">
-								       <input type="hidden" value=$user name = "postAuthor" id="postAuthor" class="form-control">
-        							</div>
-        							<div class="modal-footer">
-          								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          								<button type="submit" class="btn btn-primary">Submit Comment</button>
-        							</div>
-							</form>
-      							</div><!-- /.modal-content -->
-    						</div><!-- /.modal-dialog -->
-  					</div><!-- /.modal -->
 EOT;
-}
+				printCommentModal($modaldivid, 'viewAllPage.php', $id, $user);
+				printViewComments($commentshrefid, $commentsdivid, $dbh, $id);
+
+			}
 
 			else{
-print <<<EOT
-				<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Liked   </p>
-				<!-- Modal -->
-  					<div class="modal fade" id=$modaldivid tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    						<div class="modal-dialog">
-      							<div class="modal-content">
-        							<div class="modal-header">
-          								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          								<h4 class="modal-title">Comment</h4>
-        							</div>
-        							<div class="modal-body">
-								<form class="form-horizontal" method="post" enctype = "multipart/form-data" action = "toBlog.php">  
-          								<textarea name="blogComment" id = "blogComment" class="input-xlarge" rows="5" cols="60"></textarea>
-									<input type="hidden" value=$id name = "entryId" id="entryId" class="form-control">
-								       <input type="hidden" value=$user name = "postAuthor" id="postAuthor" class="form-control">
-        							</div>
-        							<div class="modal-footer">
-          								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          								<button type="submit" class="btn btn-primary">Submit Comment</button>
-        							</div>
-							</form>
-      							</div><!-- /.modal-content -->
-    						</div><!-- /.modal-dialog -->
-  					</div><!-- /.modal -->
+				print <<<EOT
+					<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Liked   </p>				
+EOT;
+				printCommentModal($modaldivid, 'viewAllPage.php', $id, $user);
+				printViewComments($commentshrefid, $commentsdivid, $dbh, $id);
+			}
 
-				
-EOT;
-}	
-	print <<<EOT
-				<div class="panel-group" id="accordion">
-
-  					<div class="panel panel-default">
-    						<div class="panel-heading">
-      							<h4 class="panel-title">
-        							<a data-toggle="collapse" data-parent="#accordion" href=$commentshrefid>
-          								View Comments
-        							</a>
-      							</h4>
-    						</div>
-    						<div id=$commentsdivid class="panel-collapse collapse">
-      							<div class="panel-body">
-EOT;
-$preparedquery3 = "select * from comments where entry_id = ? order by date(comment_time) desc, time(comment_time) desc";
-						$resultset3 = prepared_query($dbh, $preparedquery3, $id);
-							while ($row3 = $resultset3 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-		$comment_text = $row3['comment_text'];
-		$commenting_user = $row3['commenting_user'];
-print <<<EOT
-       							<p><a href="toBlog.php?user=$commenting_user">$commenting_user</a> said: $comment_text </p>
-EOT;
-}	
+	
 
 print <<<EOT
       							</div>
@@ -626,28 +557,7 @@ print <<<EOT
   					</div>
 				</div>
 EOT;
-print <<<EOT
-					<div class="panel-group" id="accordion">
-
-  				<div class="panel panel-default">
-    					<div class="panel-heading">
-      						<h4 class="panel-title">
-        						<a data-toggle="collapse" data-parent="#accordion" href=$hrefid>
-          							View Likes
-        						</a>
-      						</h4>
-    					</div>
-    					<div id=$divid class="panel-collapse collapse">
-      						<div class="panel-body">
-EOT;
-$preparedquery3 = "select * from likes where entry_id = ? order by date(like_time) desc, time(like_time) desc";
-						$resultset3 = prepared_query($dbh, $preparedquery3, $id);
-							while ($row3 = $resultset3 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-		$likinguser = $row3['liking_user'];
-print <<<EOT
-       						<p><a href="toBlog.php?user=$likinguser">$likinguser</a> liked this </p>
-EOT;
-}
+printViewLikes($hrefid, $divid, $dbh, $id);
 
 print <<<EOT
       						</div>
@@ -661,9 +571,7 @@ print <<<EOT
 
 				</div>
 EOT;
-	 	}
-	
-
+	}
 print <<<EOT
 		</div><!-- /.blog-main -->  
       		</div><!-- /.row -->
@@ -791,82 +699,19 @@ $currentuser = $_COOKIE['304bloguserphp'];
 					
 						<a href = "toBlog.php?entry_id=$id&posting_user=$usercol">Like</a>   </p>
 
-  					<!-- Modal -->
-  					<div class="modal fade" id=$modaldivid tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    						<div class="modal-dialog">
-      							<div class="modal-content">
-        							<div class="modal-header">
-          								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          								<h4 class="modal-title">Comment</h4>
-        							</div>
-        							<div class="modal-body">
-								<form class="form-horizontal" method="post" enctype = "multipart/form-data" action = "toBlog.php?user=$usercol">  
-          								<textarea name="blogComment" id = "blogComment" class="input-xlarge" rows="5" cols="60"></textarea>
-									<input type="hidden" value=$id name = "entryId" id="entryId" class="form-control">
-								       <input type="hidden" value=$user name = "postAuthor" id="postAuthor" class="form-control">
-        							</div>
-        							<div class="modal-footer">
-          								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          								<button type="submit" class="btn btn-primary">Submit Comment</button>
-        							</div>
-							</form>
-      							</div><!-- /.modal-content -->
-    						</div><!-- /.modal-dialog -->
-  					</div><!-- /.modal -->
+EOT;  					<!-- Modal -->
+printCommentModal($modaldivid, 'toBlog.php?user=$usercol', $id, $user);
 			
 EOT;
-}
+			}
 			else{
 print <<<EOT
 				<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Liked   </p>
-
-  					<!-- Modal -->
-  					<div class="modal fade" id=$modaldivid tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    						<div class="modal-dialog">
-      							<div class="modal-content">
-        							<div class="modal-header">
-          								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          								<h4 class="modal-title">Comment</h4>
-        							</div>
-        							<div class="modal-body">
-								<form class="form-horizontal" method="post" enctype = "multipart/form-data" action = "toBlog.php?user=$usercol">  
-          								<textarea name="blogComment" id = "blogComment" class="input-xlarge" rows="5" cols="60"></textarea>
-									<input type="hidden" value=$id name = "entryId" id="entryId" class="form-control">
-								       <input type="hidden" value=$user name = "postAuthor" id="postAuthor" class="form-control">
-        							</div>
-        							<div class="modal-footer">
-          								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          								<button type="submit" class="btn btn-primary">Submit Comment</button>
-        							</div>
-							</form>
-      							</div><!-- /.modal-content -->
-    						</div><!-- /.modal-dialog -->
-  					</div><!-- /.modal -->
 EOT;
-}
-print <<<EOT
-				<div class="panel-group" id="accordion">
-
-  					<div class="panel panel-default">
-    						<div class="panel-heading">
-      							<h4 class="panel-title">
-        							<a data-toggle="collapse" data-parent="#accordion" href=$commentshrefid>
-          								View Comments
-        							</a>
-      							</h4>
-    						</div>
-    						<div id=$commentsdivid class="panel-collapse collapse">
-      							<div class="panel-body">
-EOT;
-$preparedquery3 = "select * from comments where entry_id = ? order by date(comment_time) desc, time(comment_time) desc";
-						$resultset3 = prepared_query($dbh, $preparedquery3, $id);
-							while ($row3 = $resultset3 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-		$comment_text = $row3['comment_text'];
-		$commenting_user = $row3['commenting_user'];
-print <<<EOT
-       							<p><a href="toBlog.php?user=$commenting_user">$commenting_user</a> said: $comment_text </p>
-EOT;
-}
+printCommentModal($modaldivid, 'toBlog.php?user=$usercol', $id, $user);
+			}
+printViewComments($commentshrefid, $commentsdivid, $dbh, $id);
+	
 
 print <<<EOT
       							</div>
@@ -874,28 +719,7 @@ print <<<EOT
   					</div>
 				</div>
 EOT;
-print <<<EOT
-				<div class="panel-group" id="accordion">
-
-  					<div class="panel panel-default">
-    						<div class="panel-heading">
-      							<h4 class="panel-title">
-        							<a data-toggle="collapse" data-parent="#accordion" href=$hrefid>
-          								View Likes
-        							</a>
-      							</h4>
-    						</div>
-    						<div id=$divid class="panel-collapse collapse">
-      							<div class="panel-body">
-EOT;
-$preparedquery3 = "select * from likes where entry_id = ? order by date(like_time) desc, time(like_time) desc";
-						$resultset3 = prepared_query($dbh, $preparedquery3, $id);
-							while ($row3 = $resultset3 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-		$likinguser = $row3['liking_user'];
-print <<<EOT
-       							<p><a href="toBlog.php?user=$likinguser">$likinguser</a> liked this </p>
-EOT;
-}
+printViewLikes($hrefid, $divid, $dbh, $id);
 
 print <<<EOT
       							</div>
@@ -909,7 +733,7 @@ print <<<EOT
 
 				</div>
 EOT;
-	 	}
+}
 print <<<EOT
 			</div><!-- /.blog-main -->  
         		<div class="col-sm-3 col-sm-offset-1 blog-sidebar">

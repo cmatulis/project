@@ -23,6 +23,7 @@ if(isset($_POST['new_entry'])) {
 if (isSet($_POST['blogComment'])){
 	$insert = "insert into comments(entry_id, commenting_user, comment_text) values(?, ?, ?)";
 	$rows = prepared_statement($dbh, $insert, array($_POST['entryId'], $poster, $_POST['blogComment']));
+	
 
 }
 
