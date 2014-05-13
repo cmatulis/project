@@ -405,6 +405,7 @@ print <<<EOT
             			<h4>About</h4>
             			<p>$profile</p>
           		</div>
+<!--
           		<div class="sidebar-module">
             			<h4>Archives</h4>
             			<ol class="list-unstyled">
@@ -422,6 +423,7 @@ print <<<EOT
               			<li><a href="#">February 2013</a></li>
             			</ol>
           		</div>
+-->
         
         	</div><!-- /.blog-sidebar -->
 
@@ -694,22 +696,19 @@ $currentuser = $_COOKIE['304bloguserphp'];
 			$resultset4 = prepared_query($dbh, $preparedquery4, array($id, $currentuser));
 			$resultset4check = $resultset4 -> numRows();
 			if ($resultset4check == 0){
-	print <<<EOT
-							<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
-					
-						<a href = "toBlog.php?entry_id=$id&posting_user=$usercol">Like</a>   </p>
-
-EOT;  					<!-- Modal -->
-printCommentModal($modaldivid, 'toBlog.php?user=$usercol', $id, $user);
-			
+print <<<EOT
+	<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp <a href = "toBlog.php?entry_id=$id&posting_user=$usercol">Like</a>
 EOT;
-			}
+					//<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  <a href = "toBlog.php?entry_id=$id&posting_user=$usercol">Like</a>   </p>
+//EOT;  
+				printCommentModal($modaldivid, "toBlog.php?user=$usercol", $id, $usercol);
+}
 			else{
 print <<<EOT
 				<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Liked   </p>
 EOT;
-printCommentModal($modaldivid, 'toBlog.php?user=$usercol', $id, $user);
-			}
+//printCommentModal($modaldivid, 'toBlog.php?user=$usercol', $id, $usercol);
+}
 printViewComments($commentshrefid, $commentsdivid, $dbh, $id);
 	
 
@@ -741,6 +740,7 @@ print <<<EOT
             				<h4>About</h4>
             				<p>$profile</p>
           			</div>
+<!--
           			<div class="sidebar-module">
             				<h4>Archives</h4>
             				<ol class="list-unstyled">
@@ -758,6 +758,7 @@ print <<<EOT
               				<li><a href="#">February 2013</a></li>
             				</ol>
           			</div>
+-->
         
         		</div><!-- /.blog-sidebar -->
 
