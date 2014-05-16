@@ -16,7 +16,7 @@ function insertUpload($dbh, $poster, $upload, $title, $caption){
 
 // check to see if the username and password match something in the database
 function loginCredentialsAreOkay($dbh, $username, $password){
-  	$check = "SELECT count(*) AS n FROM blog_user WHERE user = ? AND pass=?";
+  	$check = "SELECT count(*) AS n FROM blog_user WHERE binary user = ? AND binary pass=?";
     	$resultset = prepared_query($dbh, $check, array($username,$password));
     	$row = $resultset->fetchRow();
     	return( $row[0] == 1 );
@@ -652,11 +652,17 @@ print <<<EOT
           		</form>
 EOT;
 	}
+	$preparedquery = "SELECT user FROM blog_user where user = ?";
+  	//Get all the blog entries, including, presumably, the one just added, if any
+	$resultset = prepared_query($dbh, $preparedquery, $user);
+ 	while ($row = $resultset -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+		$username = $row['user'];
+}
 print <<<EOT
     		<div class="container">
       			<div class="blog-header">
-        			<h1 class="blog-title">$user</h1>
-        			<p class="lead blog-description">Blog description goes here</p>
+        			<h1 class="blog-title">$username</h1>
+        			<!-- <p class="lead blog-description">Blog description goes here</p> -->
       			</div>
       			<div class="row">
 				<div class="col-sm-8 blog-main">

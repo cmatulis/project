@@ -17,7 +17,7 @@ create table blog_user(
 TYPE = InnoDB;
  
 insert into blog_user(user,pass,cryp) values
- ('Happy','Happy',password('Happy')),
+ ('happy','happy',password('Happy')),
  ('Bashful','Bashful',password('Bashful')),
  ('Grumpy','Grumpy',password('Grumpy')),
  ('Sleepy','Sleepy',password('Sleepy')),
@@ -54,17 +54,14 @@ TYPE = InnoDB;
 create table profile(
        user varchar(30),
        profile text,
-    	fullname text,
-    	birthdate text,
-    	city text,
-    	state text,
-    	country text,
-    	interests text,
+	fullname text,
+	birthdate text,
+	city text,
+	state text,
+	country text,
+	interests text,
        foreign key (user) references blog_user(user))
        TYPE = InnoDB;
-
-insert into profile(user, profile) values
-('Happy', 'This is where the user''s profile will go');
 
 create table follows(
        user varchar(30),
@@ -85,3 +82,14 @@ create table likes(
        like_time timestamp,
 	primary key (entry_id, liking_user))
 	TYPE = InnoDB;
+
+INSERT into profile(user, profile, fullname, birthdate, city, state, country, interests) VALUES ('happy',NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+('Bashful',NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+('Grumpy',NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+('Sleepy',NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+('Sneezy',NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+('Dopey',NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+('Doc',NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+('Sleazy',NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+('Gropey',NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+('Dumpy',NULL,NULL,NULL,NULL,NULL,NULL,NULL);
