@@ -5,13 +5,14 @@
 // inserts a text post into the database
 function insertPost($dbh, $poster, $entry, $title){
 	$insert = "INSERT INTO blog_entry(user, caption, title) VALUES (?, ?, ?)";
-  	$rows = prepared_statement($dbh, $insert, array($poster, $entry, $title));
+  	$rows = prepared_statement($dbh, $insert, array($poster, htmlspecialchars($entry), htmlspecialchars($title)));
+	
 }
 
 // inserts an image upload post into the database
 function insertUpload($dbh, $poster, $upload, $title, $caption){
   	$insert = "INSERT INTO blog_entry(user, entry, title, caption) VALUES (?, ?, ?, ?)";
-  	$rows = prepared_statement($dbh, $insert, array($poster, $upload, $title, $caption));
+  	$rows = prepared_statement($dbh, $insert, array($poster, $upload, htmlspecialchars($title), htmlspecialchars($caption)));
 }
 
 // check to see if the username and password match something in the database
@@ -232,6 +233,7 @@ print <<<EOT
 EOT;
 }
 
+// creates the box that appears for the users to insert comments in
 function printCommentModal($modaldivid, $action, $id, $usercol){
 	print <<<EOT
 		<!-- Modal -->
@@ -260,6 +262,7 @@ function printCommentModal($modaldivid, $action, $id, $usercol){
 EOT;
 }
 
+// displays comments that users have made on a post
 function printViewComments($commentshrefid, $commentsdivid, $dbh, $id){
 print <<<EOT
 	<div class="panel-group" id="accordion">
@@ -285,6 +288,7 @@ EOT;
 }
 }
 
+// display the users that have liked a post
 function printViewLikes($hrefid, $divid, $dbh, $id){
 	print <<<EOT
   		<div class="panel-group" id="accordion2">
@@ -308,6 +312,7 @@ EOT;
 EOT;
 	}
 }
+
 // prints the blog of the user who is currently logged in
 function printBlog($dbh, $user){
 	printPageTop('Blog');
@@ -348,7 +353,7 @@ EOT;
 	}
 
   	$preparedquery2 = "SELECT * from blog_entry where user = ? order by date(entered) desc, time(entered) desc";
-  	//Get all the blog entries, including, presumably, the one just added, if any
+  	//Get all the blog entries
 	$resultset2 = prepared_query($dbh, $preparedquery2, $user);
 	while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
 		$usercol = $row2['user'];
@@ -368,7 +373,7 @@ print <<<EOT
           			<div class="blog-post">
             				<h2 class="blog-post-title">$title</h2>
             				<p class="blog-post-meta">$time by <a href="#">$usercol</a></p>
-					<p> <img src='$image'> </p>
+					<p> <img class = 'img-responsive' src='$image'> </p>
             				<p> $entry </p> 
 					<a data-toggle="modal" href=$modalhrefid>Comment</a>
 					
@@ -404,27 +409,7 @@ print <<<EOT
           		<div class="sidebar-module sidebar-module-inset">
             			<h4>About</h4>
             			<p>$profile</p>
-          		</div>
-<!--
-          		<div class="sidebar-module">
-            			<h4>Archives</h4>
-            			<ol class="list-unstyled">
-              			<li><a href="#">January 2014</a></li>
-              			<li><a href="#">December 2013</a></li>
-              			<li><a href="#">November 2013</a></li>
-              			<li><a href="#">October 2013</a></li>
-              			<li><a href="#">September 2013</a></li>
-              			<li><a href="#">August 2013</a></li>
-              			<li><a href="#">July 2013</a></li>
-              			<li><a href="#">June 2013</a></li>
-              			<li><a href="#">May 2013</a></li>
-              			<li><a href="#">April 2013</a></li>
-              			<li><a href="#">March 2013</a></li>
-              			<li><a href="#">February 2013</a></li>
-            			</ol>
-          		</div>
--->
-        
+          		</div>  
         	</div><!-- /.blog-sidebar -->
 
       		</div><!-- /.row -->
@@ -519,7 +504,7 @@ print <<<EOT
           		<div class="blog-post">
             		<h2 class="blog-post-title">$title</h2>
             		<p class="blog-post-meta">$time by <a href="toBlog.php?user=$user">$user</a></p>
-  			<p> <img src='$image'></p>
+  			<p> <img class = 'img-responsive' src='$image'></p>
             		<p> $entry </p> 
 EOT;
 $currentuser = $_COOKIE['304bloguserphp'];
@@ -694,7 +679,7 @@ print <<<EOT
           		<div class="blog-post">
             			<h2 class="blog-post-title">$title</h2>
             			<p class="blog-post-meta">$time by <a href="#">$usercol</a></p>
-  				<p> <img src = '$image'> </p>
+  				<p> <img class = 'img-responsive' src = '$image'> </p>
             			<p> $entry </p> 
 EOT;
 $currentuser = $_COOKIE['304bloguserphp'];
@@ -705,15 +690,12 @@ $currentuser = $_COOKIE['304bloguserphp'];
 print <<<EOT
 	<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp <a href = "toBlog.php?entry_id=$id&posting_user=$usercol">Like</a>
 EOT;
-					//<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  <a href = "toBlog.php?entry_id=$id&posting_user=$usercol">Like</a>   </p>
-//EOT;  
 				printCommentModal($modaldivid, "toBlog.php?user=$usercol", $id, $usercol);
 }
 			else{
 print <<<EOT
 				<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Liked   </p>
 EOT;
-//printCommentModal($modaldivid, 'toBlog.php?user=$usercol', $id, $usercol);
 }
 printViewComments($commentshrefid, $commentsdivid, $dbh, $id);
 	
@@ -746,25 +728,6 @@ print <<<EOT
             				<h4>About</h4>
             				<p>$profile</p>
           			</div>
-<!--
-          			<div class="sidebar-module">
-            				<h4>Archives</h4>
-            				<ol class="list-unstyled">
-              				<li><a href="#">January 2014</a></li>
-              				<li><a href="#">December 2013</a></li>
-              				<li><a href="#">November 2013</a></li>
-              				<li><a href="#">October 2013</a></li>
-              				<li><a href="#">September 2013</a></li>
-              				<li><a href="#">August 2013</a></li>
-              				<li><a href="#">July 2013</a></li>
-              				<li><a href="#">June 2013</a></li>
-              				<li><a href="#">May 2013</a></li>
-              				<li><a href="#">April 2013</a></li>
-             				 	<li><a href="#">March 2013</a></li>
-              				<li><a href="#">February 2013</a></li>
-            				</ol>
-          			</div>
--->
         
         		</div><!-- /.blog-sidebar -->
 
@@ -822,7 +785,7 @@ EOT;
 	}
 
   	$preparedquery2 = "SELECT user FROM follows where following = ?";
-  	//Get all the blog entries, including, presumably, the one just added, if any
+  	//Get all the blog entries
 	$resultset2 = prepared_query($dbh, $preparedquery2, $user);
  	while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
 		$follower = $row2['user'];
@@ -921,8 +884,8 @@ printBlogFooter();
 // print the sign up page
 function signUp($dbh){
   if (isset ($_POST['username']) && isset($_POST['password'])) {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+    $username = htmlspecialchars($_POST['username']);
+    $password = htmlspecialchars($_POST['password']);
     $email = $_POST['email']; 
 
     $user_check = query($dbh,"SELECT user FROM blog_user WHERE user='$username'"); 
@@ -974,7 +937,7 @@ function post($query,$dbh) {
         <div class='blog-post'>
                 <h2 class='blog-post-title'>$title</h2>
                 <p class='blog-post-meta'>$time by <a href='toBlog.php?user=$user'>$user</a></p>
-          <p> <img src='$image'> </p>
+          <p> <img class = 'img-responsive' src='$image'> </p>
                 <p> $entry </p> 
                 <hr>
          </div> <!-- blog-post> 
@@ -1031,13 +994,13 @@ function findProfile($dbh,$user,$query) {
 
 function saveInfo($dbh,$user) {
   if (isset($_POST['birthdate'])) {
-  	$fullname = $_POST['fullname'];
-  	$birthdate = $_POST['birthdate'];
-  	$city = $_POST['city'];
-  	$state = $_POST['state'];
-  	$country = $_POST['country'];
-  	$interests = $_POST['interests'];
-  	$profile = $_POST['aboutme'];
+  	$fullname = htmlspecialchars($_POST['fullname']);
+  	$birthdate = htmlspecialchars($_POST['birthdate']);
+  	$city = htmlspecialchars($_POST['city']);
+  	$state = htmlspecialchars($_POST['state']);
+  	$country = htmlspecialchars($_POST['country']);
+  	$interests = htmlspecialchars($_POST['interests']);
+  	$profile = htmlspecialchars($_POST['aboutme']);
 
     	prepared_query($dbh,"UPDATE profile SET fullname=? WHERE user= ?", array($fullname, $user)); 
    	prepared_query($dbh,"UPDATE profile SET birthdate=? WHERE user= ?", array($birthdate, $user)); 
