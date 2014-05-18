@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * toBlog.php
+ * Sojung Lee & Catherine Matulis
+ * May 2014
+ * CS304
+ *
+ * Redirects to other users' blogs, and allows for interactions with other blogs,
+ * including following, unfollowing, liking, and commenting. 
+*/
+
 require_once("MDB2.php");
 require_once("/home/cs304/public_html/php/MDB2-functions.php");
 require_once("/students/cmatulis/public_html/project/blog-functions.php");
@@ -8,9 +18,7 @@ require_once("/students/cmatulis/public_html/cs304/cmatulis-dsn.inc");
 $dbh = db_connect($cmatulis_dsn);
 $thecookie = $_COOKIE['304bloguserphp'];
 
-
 // if no one is logged in, redirect to login page
-
 if(!isset($_COOKIE['304bloguserphp'])) {
     header('Location: blog-ex-login-user.php');
 }
@@ -19,6 +27,8 @@ if(!isset($_COOKIE['304bloguserphp'])) {
 if (isSet($_POST['unfollowfollowing'])){
 	$user1 = $_POST['unfollowfollowing'];
 	$user2 = $_POST['unfollowfollower'];
+
+	// update the database
 	$delete = "delete from follows where (user, following) = (?, ?)";
   	$rows = prepared_statement($dbh, $delete, array($user2, $user1));
 	showBlog($dbh, $user1, $user2);
@@ -28,6 +38,8 @@ if (isSet($_POST['unfollowfollowing'])){
 else if (isSet($_POST['followfollowing'])){
 	$user1 = $_POST['followfollowing']; // the user who is now being followed
 	$user2 = $_POST['followfollower']; // the user who is now following user1
+
+	// update the database
 	$insert = "insert into follows(user, following) values(?, ?)";
   	$rows = prepared_statement($dbh, $insert, array($user2, $user1));
 	showBlog($dbh, $user1, $user2);

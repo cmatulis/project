@@ -176,6 +176,17 @@ function printPageHeader3() {
 EOT;
 }
 
+function checkActivated($dbh, $username, $password){
+	$preparedquery = "select * from blog_user where user = ? and pass = ?";
+	$resultset = prepared_query($dbh, $preparedquery, array($username, $password));
+	while ($row = $resultset -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+		$user = $row['user'];
+		$activation = $row['activation'];
+		$result = ($activation == NULL);
+		}
+	return $result;
+}
+
 // prints the page that appears once the user has successfully logged in
 function printNext($user){
 print <<<EOT
@@ -593,7 +604,7 @@ function showBlog($dbh, $user, $user2){
        		<div class="container">
          			<nav class="blog-nav">
            				<ul class="nav navbar-nav">
-             					<li><a class="blog-nav-item" href="toBlog.php?user=$user">Blog</a></li>
+             					<li><a class="blog-nav-item active" href="toBlog.php?user=$user">Blog</a></li>
                   				<li><a class="blog-nav-item" href ="userprofile.php?user=$user">Profile</a></li>
              					<li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
              					<li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
@@ -662,7 +673,7 @@ EOT;
 print <<<EOT
     		<div class="container">
       			<div class="blog-header">
-        			<h1 class="blog-title">$username</h1>
+        			<h1 class="blog-title">$user</h1>
         			<!-- <p class="lead blog-description">Blog description goes here</p> -->
       			</div>
       			<div class="row">
@@ -930,7 +941,8 @@ function signUp($dbh){
       if ($resultset) {
         //mail message
         $message = " To activate your account, please click on this link:\n\n";
-        $message .= 'cs.wellesley.edu/~slee14/project/activate.php?email=' . urlencode($email) . "&key=$activation";
+        $message .= 'cs.wellesley.edu/~cmatulis/project/activate.php?email=' . urlencode($email) . "&key=$activation";
+	 error_reporting(E_ERROR | E_PARSE);
         mail($email, 'Registration Confirmation', $message, 'From: slee14@wellesley.edu');
         echo "<h4> You are now registered. Go to your email and click on the activation link to start blogging.</h4>";
       }

@@ -41,17 +41,6 @@ create table blog_entry(
        foreign key (user) references blog_user(user))
        TYPE = InnoDB;
 
-create table image_posts(
-       entered timestamp,
-       user varchar(30),
-       title text,
-       entry blob,
-       caption text,
-       image_id int not null auto_increment primary key,
-       INDEX (image_id),
-       foreign key (user) references blog_user(user))
-TYPE = InnoDB;
-
 create table profile(
        user varchar(30),
        profile text,

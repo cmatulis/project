@@ -15,26 +15,28 @@ if(isset($_POST['user'])) {
     $pass = $_POST['pass'];
     
 	if( loginCredentialsAreOkay($dbh,$user,$pass) ) {
-        if(setCookie('304bloguserphp',$user)) {
-        	if (!checkActivated($dbh,$user,$pass)) {
+       	if(setCookie('304bloguserphp',$user)) {
+			if (!checkActivated($dbh,$user,$pass)) {
 				printPageTop('Poster');
-				printPageHeader3(); 			
-			}
+				printPageHeader3();			
+			} 
 			else 
 				$resultid = 1;
-		} 
-    } 	
-	else {
-    	printPageTop('Poster');
-		printPageHeader2();
-    }
-}
+			}
+    		} 	
+		else {
+    			printPageTop('Poster');
+			printPageHeader2();
+    		}
+	}
 
-else{
-	printPageTop('Poster');
-	printPageHeader();
-}
+	else{
+		printPageTop('Poster');
+		printPageHeader();
+	}
 
+
+		
 if ($resultid == 1){
   	printPageTop('Poster');
 	printNext($user);
