@@ -917,7 +917,9 @@ function signUp($dbh){
     } if ($do_emailcheck > 0) {
       echo "<h4> Email is already in use!</h4>"; 
     } if (($do_usercheck == 0) && ($do_emailcheck ==0)) {
+      //unique activation code
       $activation = md5(uniqid(rand(),true)); 
+      //password crypt
       $crypt = crypt($password);
       $preparedquery = "INSERT into blog_user VALUES (?,?,?,?,?)";
       $resultset = prepared_query($dbh,$preparedquery,array($username,$password,$crypt,$email,$activation)); 
@@ -926,6 +928,7 @@ function signUp($dbh){
       $resultset2 = prepared_query($dbh,$profilequery,array($username,NULL,NULL,NULL,NULL,NULL,NULL,NULL));
 
       if ($resultset) {
+        //mail message
         $message = " To activate your account, please click on this link:\n\n";
         $message .= 'cs.wellesley.edu/~slee14/project/activate.php?email=' . urlencode($email) . "&key=$activation";
         mail($email, 'Registration Confirmation', $message, 'From: slee14@wellesley.edu');
@@ -941,9 +944,6 @@ function post($query,$dbh) {
   $self = $_SERVER['PHP_SELF']; 
   $preparedquery = "SELECT * FROM blog_entry WHERE caption LIKE ? OR title LIKE ?"; 
   $resultset = prepared_query($dbh,$preparedquery,array("%$query%","%$query%")); 
-
-  //$resultset = query($dbh,"SELECT * FROM blog_entry WHERE caption LIKE '%$query%' OR title like '%$query%'
-  //                    ORDER BY time(entered) desc"); 
   $size = $resultset -> numRows();
   if ($size === 0) {
     echo "<h2>No Posts Found</h2>";
@@ -1013,7 +1013,7 @@ function findProfile($dbh,$user,$query) {
       echo "";
     }
 }
-
+//save information for profile
 function saveInfo($dbh,$user) {
   if (isset($_POST['birthdate'])) {
   	$fullname = htmlspecialchars($_POST['fullname']);
@@ -1024,14 +1024,14 @@ function saveInfo($dbh,$user) {
   	$interests = htmlspecialchars($_POST['interests']);
   	$profile = htmlspecialchars($_POST['aboutme']);
 
-    	prepared_query($dbh,"UPDATE profile SET fullname=? WHERE user= ?", array($fullname, $user)); 
+    prepared_query($dbh,"UPDATE profile SET fullname=? WHERE user= ?", array($fullname, $user)); 
    	prepared_query($dbh,"UPDATE profile SET birthdate=? WHERE user= ?", array($birthdate, $user)); 
-    	prepared_query($dbh,"UPDATE profile SET city=? WHERE user= ?", array($city, $user)); 
-    	prepared_query($dbh,"UPDATE profile SET state=? WHERE user= ?", array($state, $user)); 
-    	prepared_query($dbh,"UPDATE profile SET country=? WHERE user= ?", array($country, $user)); 
-    	prepared_query($dbh,"UPDATE profile SET interests=? WHERE user= ?", array($interests, $user)); 
-    	prepared_query($dbh,"UPDATE profile SET profile=? WHERE user= ?", array($profile, $user)); 
-}
+    prepared_query($dbh,"UPDATE profile SET city=? WHERE user= ?", array($city, $user)); 
+    prepared_query($dbh,"UPDATE profile SET state=? WHERE user= ?", array($state, $user)); 
+  	prepared_query($dbh,"UPDATE profile SET country=? WHERE user= ?", array($country, $user)); 
+  	prepared_query($dbh,"UPDATE profile SET interests=? WHERE user= ?", array($interests, $user)); 
+  	prepared_query($dbh,"UPDATE profile SET profile=? WHERE user= ?", array($profile, $user)); 
+  }
 }
 
 

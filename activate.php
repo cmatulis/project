@@ -1,3 +1,7 @@
+<!-- Sojung Lee & Catherine Matulis 
+    activate.php 
+    lets user know if the email has been successfully activated or if there was an error 
+--> 
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -44,15 +48,11 @@
         $key = $_GET['key'];
     }
 
-
     if (isset($email) && isset($key))
     {
-
         // Update the database to set the "activation" field to null
-
         $query_activate_account = "UPDATE blog_user SET activation=NULL WHERE(email ='$email' AND activation='$key')LIMIT 1";
-
-       
+     
         $result_activate_account = query($dbh, $query_activate_account) ;
 
         // Print a customized message:
@@ -64,14 +64,12 @@
         } else
         {
             echo '<div class="alert alert-danger">Oops !Your account could not be activated. Please recheck the link or contact the system administrator.</div>';
-
         }
     } else {
             echo '<div class="alert alert-danger">Error Occured .</div>';
     }
 
-
     ?>
-</container>
+    </container>
     </body>
     </html>
