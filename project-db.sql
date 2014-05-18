@@ -10,8 +10,9 @@ drop table if exists blog_user;
 create table blog_user(
     user varchar(30) primary key,
     pass varchar(30),
-    cryp char(41),
+    cryp varchar(41),
     email varchar(50),
+    activation varchar(40),
     INDEX (user)
 )
 TYPE = InnoDB;

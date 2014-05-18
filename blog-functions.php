@@ -160,6 +160,22 @@ function printPageHeader2() {
 EOT;
 }
 
+// prints the page that appears if the user has not yet activated the email
+function printPageHeader3() {
+  printLoginForm();
+
+  print <<<EOT
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+        <div class="jumbotron">
+            <div class="container">
+              <h1></h1>
+                <p>You have not yet activated your account. Please check your email for an authentication link.</p>
+                
+            </div>
+        </div>
+EOT;
+}
+
 // prints the page that appears once the user has successfully logged in
 function printNext($user){
 print <<<EOT
@@ -901,13 +917,19 @@ function signUp($dbh){
     } if ($do_emailcheck > 0) {
       echo "<h4> Email is already in use!</h4>"; 
     } if (($do_usercheck == 0) && ($do_emailcheck ==0)) {
-      $query = "INSERT into blog_user VALUES ('$username','$password',password('$password'),'$email')";
-      $resultset = query($dbh,$query);
-	$profilequery = "INSERT into profile VALUES ('$username',NULL,NULL,NULL,NULL,NULL,NULL,NULL)";
-      query($dbh,$profilequery);
+      $activation = md5(uniqid(rand(),true)); 
+      $crypt = crypt($password);
+      $preparedquery = "INSERT into blog_user VALUES (?,?,?,?,?)";
+      $resultset = prepared_query($dbh,$preparedquery,array($username,$password,$crypt,$email,$activation)); 
+
+      $profilequery = "INSERT into profile VALUES (?,?,?,?,?,?,?,?)";
+      $resultset2 = prepared_query($dbh,$profilequery,array($username,NULL,NULL,NULL,NULL,NULL,NULL,NULL));
 
       if ($resultset) {
-        echo "<h4> You are now registered. Click <a href=\"blog-ex-login-user.php\">here</a> to return to login page </h4>";
+        $message = " To activate your account, please click on this link:\n\n";
+        $message .= 'cs.wellesley.edu/~slee14/project/activate.php?email=' . urlencode($email) . "&key=$activation";
+        mail($email, 'Registration Confirmation', $message, 'From: slee14@wellesley.edu');
+        echo "<h4> You are now registered. Go to your email and click on the activation link </h4>";
       }
     }
     echo "</center></div>";

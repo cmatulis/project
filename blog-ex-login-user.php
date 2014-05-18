@@ -11,17 +11,23 @@ $msg = "";
 $resultid = 0;
 
 if(isset($_POST['user'])) {
-    	$user = $_POST['user'];
+    $user = $_POST['user'];
+    $pass = $_POST['pass'];
     
-	if( loginCredentialsAreOkay($dbh,$user,$_POST['pass']) ) {
-        	if(setCookie('304bloguserphp',$user)) {
-			$resultid = 1;
-       	} 
-    	} 
+	if( loginCredentialsAreOkay($dbh,$user,$pass) ) {
+        if(setCookie('304bloguserphp',$user)) {
+        	if (!checkActivated($dbh,$user,$pass)) {
+				printPageTop('Poster');
+				printPageHeader3(); 			
+			}
+			else 
+				$resultid = 1;
+		} 
+    } 	
 	else {
-        	printPageTop('Poster');
+    	printPageTop('Poster');
 		printPageHeader2();
-    	}
+    }
 }
 
 else{
