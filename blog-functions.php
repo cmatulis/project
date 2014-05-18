@@ -929,7 +929,7 @@ function signUp($dbh){
         $message = " To activate your account, please click on this link:\n\n";
         $message .= 'cs.wellesley.edu/~slee14/project/activate.php?email=' . urlencode($email) . "&key=$activation";
         mail($email, 'Registration Confirmation', $message, 'From: slee14@wellesley.edu');
-        echo "<h4> You are now registered. Go to your email and click on the activation link </h4>";
+        echo "<h4> You are now registered. Go to your email and click on the activation link to start blogging.</h4>";
       }
     }
     echo "</center></div>";
