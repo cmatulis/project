@@ -1,5 +1,11 @@
 <?php
+
 /*
+ * postPage.php
+ * Sojung Lee & Catherine Matulis
+ * May 2014
+ * CS304
+ *
  * This file contains the code that will execute when the user wants to upload a post.
  * It will print forms to allow users to upload text or image posts, and will call the functions
  * that insert these posts into the database.
@@ -41,7 +47,7 @@ if(isset($_POST['new_entry'])) {
 
 // determine the new filename for image post that will be stored and call the
 // function to insert it into the database
-
+$postNum = 0;
 if(isset($_POST['uploadTitle'])){
 	// the image files are stored in a folder 
 	$tmp = $_FILES['fileInput']['tmp_name'];
@@ -58,9 +64,16 @@ if(isset($_POST['uploadTitle'])){
 	// the url where the image can be located
 	$url = 'images/' . $postNum;
 
+	// check the file type of the uploaded file.  Only allow gif, jpeg, jpg, or png image files.
+	$finfo = finfo_open(FILEINFO_MIME_TYPE);
+	$type = finfo_file($finfo, $tmp);
+	if (strcmp($type, 'image/gif') & strcmp($type, 'image/jpeg') & strcmp($type, 'image/jpg') & strcmp($type, 'image/png')){
+		echo "Invalid file type.  Please upload a valid file.";
+	}
+
 	// move the uploaded file into the images folder and
 	// insert the image post into the database
-	if (move_uploaded_file($tmp, $destfile)){
+	else if (move_uploaded_file($tmp, $destfile)){
 		insertUpload($dbh, $poster, $url, $_POST['uploadTitle'], $_POST['image_caption']);
 	
 	}

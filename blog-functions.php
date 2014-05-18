@@ -67,7 +67,8 @@ print <<<EOT
             				</div>  
           		</div>  
           		<div class="control-group">  
-            			<label class="control-label" for="fileInput">Select file to Upload</label>  
+            			<label class="control-label" for="fileInput">Select file to Upload</label> 
+				<p> Files must be in gif, png, jpg, or jpeg format. </p> 
             				<div class="controls">  
               				<input class="input-file" name = "fileInput" id="fileInput" type="file">  
             				</div>  
