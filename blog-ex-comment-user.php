@@ -28,6 +28,23 @@ if (isSet($_POST['blogComment'])){
 	}
 
 }
+
+// if the user wants to delete a post
+else if (isSet($_GET['entry_id'])){
+	$entry_id = $_GET['entry_id']; //id of the entry that was liked
+	$posting_user = $_GET['posting_user']; // the author of the post
+	
+	if (!strcmp($posting_user, $poster)){
+		$preparedquery = "delete from likes where entry_id = ?";
+		$resultset = prepared_query($dbh, $preparedquery, array($entry_id));
+		$preparedquery2 = "delete from comments where entry_id = ?";
+		$resultset2 = prepared_query($dbh, $preparedquery2, array($entry_id));
+		$preparedquery3 = "delete from blog_entry where entry_id = ?";
+		$resultset3 = prepared_query($dbh, $preparedquery3, array($entry_id));
+	}
+	header("Location: blog-ex-comment-user.php");
+}
+
 printBlog($dbh, $poster);
 //printPostings($dbh);
 

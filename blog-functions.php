@@ -403,7 +403,7 @@ print <<<EOT
             				<p class="blog-post-meta">$time by <a href="#">$usercol</a></p>
 					<p> <img class = 'img-responsive' src='$image'> </p>
             				<p> $entry </p> 
-					<a data-toggle="modal" href=$modalhrefid>Comment</a>
+					<a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href = "blog-ex-comment-user.php?entry_id=$id&posting_user=$usercol">Delete</a>
 					
 EOT;
 
