@@ -108,6 +108,44 @@ print <<<EOT
 EOT;
 }
 
+// determines if a like button should be displayed, and prints a comment button and like button (if necessary)
+function printLikeButton($dbh, $id, $modalhrefid, $ref, $postAuthor, $value){
+	error_reporting(0);
+	session_start();
+	$currentuser = $_SESSION['user'];
+
+			// check to see if the current user has already liked this post
+			$likedCheck = "select * from likes where entry_id = ? and liking_user = ?";
+			$likedResults = prepared_query($dbh, $likedCheck, array($id, $currentuser));
+			$likeResultsCheck = $likedResults -> numRows();
+
+			// if the post belongs to the current user, do not supply a like button
+			if ($likeResultsCheck == 0 & !strcmp($postAuthor, $currentuser) & $value == 1){
+				print <<<EOT
+					<a data-toggle="modal" href=$modalhrefid>Comment &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href = "$ref">Delete</a>
+
+EOT;
+}
+			else if ($likeResultsCheck == 0 & !strcmp($postAuthor, $currentuser) & $value != 1){
+				print <<<EOT
+					<a data-toggle="modal" href=$modalhrefid>Comment</a>
+EOT;
+}
+
+			// if the post belongs to someone else and the user has not liked it, provide a like button
+			else if ($likeResultsCheck == 0){
+				print <<<EOT
+					<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   <a href = "$ref">Like</a>   </p>
+EOT;
+			}
+			
+			// otherwise, the user has already liked it
+			else{
+				print <<<EOT
+					<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Liked   </p>				
+EOT;
+			}
+}
 
 // prints the login page
 function printPageHeader() {
@@ -241,6 +279,31 @@ print <<<EOT
 EOT;
 }
 
+// gets the necessary information about posts from the database and prints the blog entries
+function displayBlog($dbh, $queryResults, $ref, $value){
+ 	while ($row = $queryResults -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+		$user = $row['user'];
+		$time = $row['entered'];
+		$image = $row['entry'];
+		$entry = $row['caption'];
+		$title = $row['title'];
+		$id = $row['entry_id'];
+		$hrefid = "#"."div".$id;
+		$divid = "div".$id;
+		$modalhrefid = "#"."modaldiv".$id;
+		$modaldivid = "modaldiv".$id;
+		$commentshrefid = "#"."commentsdiv".$id;
+		$commentsdivid = "commentsdiv".$id;
+		
+		$refid = $ref."?entry_id=$id&posting_user=$user";
+
+		printPost($title, $time, "toBlog.php?user=$user", $user, $image, $entry);
+		printLikeButton($dbh, $id, $modalhrefid, $refid, $user, $value);
+		printCommentModal($modaldivid, $ref, $id, $user);
+		printViewComments($commentshrefid, $commentsdivid, $dbh, $id);
+		printViewLikes($hrefid, $divid, $dbh, $id);
+}
+}
 
 // includes the CSS and js files that are necessary for each page 
 function printPageTop($title) {
@@ -334,6 +397,18 @@ print <<<EOT
 EOT;
 }
 
+// displays a blog post
+function printPost($title, $time, $ref, $usercol, $image, $entry){
+print <<<EOT
+          		<div class="blog-post">
+            			<h2 class="blog-post-title">$title</h2>
+            			<p class="blog-post-meta">$time by <a href="$ref">$usercol</a></p>
+  				<p> <img class = 'img-responsive' src = '$image'> </p>
+            			<p> $entry </p> 
+EOT;
+
+
+}
 // prints the top of each user's blog, which simply displays the user's username
 function printBlogTop($user){
 print <<<EOT
@@ -403,46 +478,13 @@ EOT;
 printSearchForm();
 printBlogTop($user);
 
-	// get all of the posts that were created by the currently logged-in user
-	// we have a similar query in other methods because the other contents of the page (comment, like, delete buttons, etc.) 
-	// are displayed in a while loop while the database is queried, so it is not particularly efficient to try to contain the
-	// queries in a function
+	// get all of the posts that were created by the currently logged-in user and display their blog
   	$preparedquery = "SELECT * from blog_entry where user = ? order by date(entered) desc, time(entered) desc";
 	$resultset = prepared_query($dbh, $preparedquery, $user);
-	while ($row = $resultset -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-		$usercol = $row['user'];
-		$time = $row['entered'];
-		$image = $row['entry'];
-		$entry = $row['caption'];
-		$title = $row['title'];
-		$id = $row['entry_id'];
-		$hrefid = "#"."div".$id;
-		$divid = "div".$id;
-		$modalhrefid = "#"."modaldiv".$id;
-		$modaldivid = "modaldiv".$id;
-		$commentshrefid = "#"."commentsdiv".$id;
-		$commentsdivid = "commentsdiv".$id;
 
-		// check to ensure that the posts displaying belong to the currently logged in user, then give the
-		// option to delete posts
-    		if (!strcmp($usercol, $user)){  
-print <<<EOT
-          			<div class="blog-post">
-            				<h2 class="blog-post-title">$title</h2>
-            				<p class="blog-post-meta">$time by <a href="#">$usercol</a></p>
-					<p> <img class = 'img-responsive' src='$image'> </p>
-            				<p> $entry </p> 
-					<a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href = "blog-ex-comment-user.php?entry_id=$id&posting_user=$usercol">Delete</a>
-					
-EOT;
-
-					printCommentModal($modaldivid, 'blog-ex-comment-user.php', $id, $usercol); 
-					printViewComments($commentshrefid, $commentsdivid, $dbh, $id);	
-					printViewLikes($hrefid, $divid, $dbh, $id);
-	 	}
-	}
-printUserProfile($dbh, $user);
-printBlogFooter();
+	displayBlog($dbh, $resultset, "blog-ex-comment-user.php", 1);
+	printUserProfile($dbh, $user);
+	printBlogFooter();
 }
 
 // print the page where the user can choose whether the type of post they will upload
@@ -510,66 +552,12 @@ print <<<EOT
       					</div>
 EOT;
 
+
 	// get the most recent 20 blog posts from all users to display
-  	$allPosts = $dbh->query("SELECT * from blog_entry ORDER BY entered DESC LIMIT 20");
- 	while ($row = $allPosts -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-		$user = $row['user'];
-		$time = $row['entered'];
-		$image = $row['entry'];
-		$entry = $row['caption'];
-		$title = $row['title'];
-		$id = $row['entry_id'];
-		$hrefid = "#"."div".$id;
-		$divid = "div".$id;
-		$modalhrefid = "#"."modaldiv".$id;
-		$modaldivid = "modaldiv".$id;
-		$commentshrefid = "#"."commentsdiv".$id;
-		$commentsdivid = "commentsdiv".$id;
-print <<<EOT
-          		<div class="blog-post">
-            			<h2 class="blog-post-title">$title</h2>
-            			<p class="blog-post-meta">$time by <a href="toBlog.php?user=$user">$user</a></p>
-  				<p> <img class = 'img-responsive' src='$image'></p>
-            			<p> $entry </p> 
-EOT;
-error_reporting(0);
-session_start();
-$currentuser = $_SESSION['user'];
+  	$preparedquery = "SELECT * from blog_entry ORDER BY entered DESC LIMIT 20";
+	$allPosts = query($dbh, $preparedquery);
 
-			// check to see if the current user has already liked this post
-			$likedCheck = "select * from likes where entry_id = ? and liking_user = ?";
-			$likedResults = prepared_query($dbh, $likedCheck, array($id, $currentuser));
-			$likeResultsCheck = $likedResults -> numRows();
-
-			// if the post belongs to the current user, do not supply a like button
-			if ($likeResultsCheck == 0 & !strcmp($user, $currentuser)){
-				print <<<EOT
-					<a data-toggle="modal" href=$modalhrefid>Comment</a>
-EOT;
-				printCommentModal($modaldivid, 'viewAllPage.php', $id, $user);
-				printViewComments($commentshrefid, $commentsdivid, $dbh, $id);
-}
-			// if the post belongs to someone else and the user has not liked it, provide a like button
-			else if ($likeResultsCheck == 0){
-				print <<<EOT
-					<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   <a href = "viewAllPage.php?entry_id=$id&posting_user=$user">Like</a>   </p>
-
-EOT;
-				printCommentModal($modaldivid, 'viewAllPage.php', $id, $user);
-				printViewComments($commentshrefid, $commentsdivid, $dbh, $id);
-			}
-			
-			// otherwise, the user has already liked it
-			else{
-				print <<<EOT
-					<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Liked   </p>				
-EOT;
-				printCommentModal($modaldivid, 'viewAllPage.php', $id, $user);
-				printViewComments($commentshrefid, $commentsdivid, $dbh, $id);
-			}
-
-printViewLikes($hrefid, $divid, $dbh, $id);
-	}
+	displayBlog($dbh, $allPosts, "viewAllPage.php", 0);
 print <<<EOT
 		</div><!-- /.blog-main -->  
       		</div><!-- /.row -->
@@ -652,54 +640,15 @@ print <<<EOT
           		</form>
 EOT;
 	}
-printBlogTop($user);
+	printBlogTop($user);
 
 	// get all of the blog posts from this user
   	$postsQuery = "SELECT * from blog_entry where user = ?  order by date(entered) desc, time(entered) desc";
 	$postsResults = prepared_query($dbh, $postsQuery, $user);
- 	while ($row2 = $postsResults -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-		$usercol = $row2['user'];
-		$time = $row2['entered'];
-		$image = $row2['entry'];
-		$entry = $row2['caption'];
-		$title = $row2['title'];
-		$id = $row2['entry_id'];
-		$hrefid = "#"."div".$id;
-		$divid = "div".$id; 
-		$modalhrefid = "#"."modaldiv".$id;
-		$modaldivid = "modaldiv".$id;
-		$commentshrefid = "#"."commentsdiv".$id;
-		$commentsdivid = "commentsdiv".$id;   
-print <<<EOT
-          		<div class="blog-post">
-            			<h2 class="blog-post-title">$title</h2>
-            			<p class="blog-post-meta">$time by <a href="#">$usercol</a></p>
-  				<p> <img class = 'img-responsive' src = '$image'> </p>
-            			<p> $entry </p> 
-EOT;
-error_reporting(0);
-session_start();
-$currentuser = $_SESSION['user'];
-			$preparedquery4 = "select * from likes where entry_id = ? and liking_user = ?";
-			$resultset4 = prepared_query($dbh, $preparedquery4, array($id, $currentuser));
-			$resultset4check = $resultset4 -> numRows();
-			if ($resultset4check == 0){
-print <<<EOT
-	<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp <a href = "toBlog.php?entry_id=$id&posting_user=$usercol">Like</a>
-EOT;
-				printCommentModal($modaldivid, "toBlog.php?user=$usercol", $id, $usercol);
-}
-			else{
-print <<<EOT
-				<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Liked   </p>
-EOT;
-}
-printViewComments($commentshrefid, $commentsdivid, $dbh, $id);
-	
-printViewLikes($hrefid, $divid, $dbh, $id);
-}
-printUserProfile($dbh, $user);
-printBlogFooter();
+
+	displayBlog($dbh, $postsResults, "toBlog.php", 0);
+	printUserProfile($dbh, $user);
+	printBlogFooter();
 }
 
 
@@ -735,8 +684,9 @@ print <<<EOT
       		<div class="row">
 			<div class="col-sm-8 blog-main">
 EOT;
+
+	// get and display the users who are following this user
   	$getFollowers = "SELECT user FROM follows where following = ?";
-  	//Get all the blog entries
 	$followersResults = prepared_query($dbh, $getFollowers, $user);
  	while ($row = $followersResults -> fetchRow(MDB2_FETCHMODE_ASSOC)){
 		$follower = $row['user'];
@@ -962,7 +912,5 @@ function saveInfo($dbh,$user) {
   		prepared_query($dbh,"UPDATE profile SET profile=? WHERE user= ?", array($profile, $user)); 
   	}
 }
-
-
 
 ?>
