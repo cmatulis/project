@@ -16,9 +16,11 @@ if(isset($_POST['user'])) {
     
 	if( loginCredentialsAreOkay($dbh,$user,$pass) ) {
        	if(setCookie('304bloguserphp',$user)) {
+			session_start();
+			$_SESSION['user'] = $user;
 			if (!checkActivated($dbh,$user,$pass)) {
 				printPageTop('Poster');
-				printPageHeader3();			
+				printActivationNeeded();			
 			} 
 			else 
 				$resultid = 1;
@@ -26,7 +28,7 @@ if(isset($_POST['user'])) {
     		} 	
 		else {
     			printPageTop('Poster');
-			printPageHeader2();
+			printIncorrectLoginPage();
     		}
 	}
 

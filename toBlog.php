@@ -16,11 +16,13 @@ require_once("/students/cmatulis/public_html/project/blog-functions.php");
 require_once("/students/cmatulis/public_html/cs304/cmatulis-dsn.inc");
 
 $dbh = db_connect($cmatulis_dsn);
-$thecookie = $_COOKIE['304bloguserphp'];
+
+session_start();
+$loggedInUser = $_SESSION['user'];
 
 // if no one is logged in, redirect to login page
-if(!isset($_COOKIE['304bloguserphp'])) {
-    header('Location: blog-ex-login-user.php');
+if(!isset($_SESSION['user'])) {
+    header('Location: blog-login.php');
 }
 
 // if someone has clicked the unfollow button
@@ -48,7 +50,7 @@ else if (isSet($_POST['followfollowing'])){
 // if someone has liked a post
 else if (isSet($_GET['entry_id'])){
 	$entry_id = $_GET['entry_id']; //id of the entry that was liked
-	$liking_user = $thecookie;		// the user who liked the post
+	$liking_user = $loggedInUser;		// the user who liked the post
 	$posting_user = $_GET['posting_user']; // the author of the post
 	
 	// do not allow a user to like their own post
@@ -69,28 +71,26 @@ else if (isSet($_GET['entry_id'])){
 // if a user is inserting a comment into a blog
 else if (isSet($_POST['blogComment'])){
 	$insert = "insert into comments(entry_id, commenting_user, comment_text) values(?, ?, ?)";
-	$rows = prepared_statement($dbh, $insert, array($_POST['entryId'], $thecookie, $_POST['blogComment']));
-	
-	// determine the format of the page to be displayed depending if the user has liked their own post or has liked another user's post
-	$result = ($_POST['postAuthor'] == $thecookie);
-	if ($result == 1){
-  		printBlog($dbh, $thecookie);
-	}
-	else{
-		showBlog($dbh, $_POST['postAuthor'], $thecookie);
-	}
 
+	// the current user should remain on the blog page of the user who created the post, which must be determined
+	$rows = prepared_statement($dbh, $insert, array($_POST['entryId'], $loggedInUser, $_POST['blogComment']));
+	$preparedquery = "SELECT user FROM blog_entry where entry_id = ?";
+	$resultset = prepared_query($dbh, $preparedquery, $_POST['entryId']);
+	$row = $resultset -> fetchRow(MDB2_FETCHMODE_ASSOC);
+  	$posting_user = $row['user'];
+
+	header("Location: toBlog.php?user=$posting_user");
 }
 
 // otherwise display the blog requested
 else{
 	$user = $_GET['user'];
-	$result = ($user == $thecookie);
+	$result = ($user == $loggedInUser);
 	if ($result == 1){
   		printBlog($dbh, $user);
 	}
 	else{
-		showBlog($dbh, $user, $thecookie);
+		showBlog($dbh, $user, $loggedInUser);
 	}
 }
 

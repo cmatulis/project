@@ -17,14 +17,14 @@ require_once("/students/cmatulis/public_html/project/blog-functions.php");
 require_once("/students/cmatulis/public_html/cs304/cmatulis-dsn.inc");
 
 $dbh = db_connect($cmatulis_dsn);
+session_start();
 
 // if the user is not logged in, direct them to the login page
-if(!isset($_COOKIE['304bloguserphp'])) {
-    header('Location: blog-ex-login-user.php');
+if(!isset($_SESSION['user'])) {
+    header('Location: blog-login.php');
 }
 
-
-$poster = $_COOKIE['304bloguserphp'];
+$poster = $_SESSION['user'];
 printPostPage();
 
 // the user can choose to insert a text post or image post
@@ -32,7 +32,7 @@ $postType = $_GET['type'];
 
 // print a form to upload a text post
 if ($postType == 'text'){
-	printCommentForm1();
+	printTextPostForm();
 }
 
 // print a form to upload an image post
@@ -43,6 +43,7 @@ if ($postType == 'upload'){
 // call the function to upload a text post
 if(isset($_POST['new_entry'])) {
     insertPost($dbh,$poster,$_POST['new_entry'], $_POST['postTitle']);
+    echo "		Successful post!";
 }
 
 // determine the new filename for image post that will be stored and call the
@@ -53,7 +54,8 @@ if(isset($_POST['uploadTitle'])){
 	$tmp = $_FILES['fileInput']['tmp_name'];
 	$destdir = '/students/cmatulis/public_html/project/images/';
 
-	// store the image with a filename based on the entryid that it will correspond to in the database
+	// store the image with a filename based on the entryid that it will correspond to in the database 
+	// which is the highest current entryid + 1
 	$resultset = $dbh->query("select entry_id from blog_entry order by entry_id desc limit 1");
 	while ($row = $resultset -> fetchRow(MDB2_FETCHMODE_ASSOC)){
 		$postNum = $row['entry_id'] + 1;
@@ -75,6 +77,7 @@ if(isset($_POST['uploadTitle'])){
 	// insert the image post into the database
 	else if (move_uploaded_file($tmp, $destfile)){
 		insertUpload($dbh, $poster, $url, $_POST['uploadTitle'], $_POST['image_caption']);
+		echo "		Successful upload!";
 	
 	}
 	else {

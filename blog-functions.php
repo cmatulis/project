@@ -1,12 +1,19 @@
 <?php
 
-// Database operations
+/**
+ * blog-functions.php
+ * Sojung Lee & Catherine Matulis
+ * May 2014
+ * CS304
+ * 
+ * Contains many of the functions that are used to update the database and generate web pages
+ * associated with the site
+*/
 
 // inserts a text post into the database
 function insertPost($dbh, $poster, $entry, $title){
 	$insert = "INSERT INTO blog_entry(user, caption, title) VALUES (?, ?, ?)";
-  	$rows = prepared_statement($dbh, $insert, array($poster, htmlspecialchars($entry), htmlspecialchars($title)));
-	
+  	$rows = prepared_statement($dbh, $insert, array($poster, htmlspecialchars($entry), htmlspecialchars($title)));	
 }
 
 // inserts an image upload post into the database
@@ -22,41 +29,55 @@ function loginCredentialsAreOkay($dbh, $username, $password){
     	$row = $resultset->fetchRow();
     	return( $row[0] == 1 );
 }
-    
-// ================================================================
-// printing stuff
 
+// print the profile of a blog user (displayed in the sidebar on a user's blog)
+function printUserProfile($dbh, $user){
+	$profile = '';
+	$profileQuery = "SELECT profile FROM profile where user = ?";
+	$profileResults = prepared_query($dbh, $profileQuery, $user);
+	$row = $profileResults -> fetchRow(MDB2_FETCHMODE_ASSOC);
+  	$profile = $row['profile'];
+
+	print <<<EOT
+		</div><!-- /.blog-main -->  
+        	<div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+          		<div class="sidebar-module sidebar-module-inset">
+            			<h4>About</h4>
+            			<p>$profile</p>
+          		</div>  
+        	</div><!-- /.blog-sidebar -->
+      		</div><!-- /.row -->
+    		</div><!-- /.container -->
+EOT;
+}   
 
 // prints a form for uploading text posts
-function printCommentForm1()
-{
+function printTextPostForm(){
 print <<<EOT
 		<form class="form-horizontal" method="post" action = "postPage.php?type=">  
-        	<fieldset>  
-          
-          	<div class="control-group">  
-            		<label class="control-label" for="input01">Title</label>  
-            			<div class="controls">  
-              			<input type="text" class="input-xlarge" name="postTitle" id="postTitle">   
-            			</div>  
-          	</div>  
-          	<div class="control-group">  
-            		<label class="control-label" for="textarea">Text Contents</label>  
-            			<div class="controls">  
-              			<textarea class="input-xlarge" name="new_entry" id="new_entry" rows="5" cols="60"></textarea>  
-            			</div>  
-          	</div>  
-          	<div class="form-actions">  
-            		<button type="submit" class="btn btn-primary">Post</button>  
-          	</div>  
-        	</fieldset>  
+        		<fieldset>  
+          			<div class="control-group">  
+            				<label class="control-label" for="input01">Title</label>  
+            				<div class="controls">  
+              				<input type="text" class="input-xlarge" name="postTitle" id="postTitle">   
+            				</div>  
+          			</div>  
+          			<div class="control-group">  
+            				<label class="control-label" for="textarea">Text Contents</label>  
+            				<div class="controls">  
+              				<textarea class="input-xlarge" name="new_entry" id="new_entry" rows="5" cols="60"></textarea>  
+            				</div>  
+          			</div>  
+          			<div class="form-actions">  
+            				<button type="submit" class="btn btn-primary">Post</button>  
+          			</div>  
+        		</fieldset>  
 		</form>  
 EOT;
 }
 
 // prints a form for uploading image files
-function printUploadForm()
-{
+function printUploadForm(){
 print <<<EOT
 		<form class="form-horizontal" method="post" enctype = "multipart/form-data" action = "postPage.php?type=">  
         	<fieldset>  
@@ -119,7 +140,7 @@ print <<<EOT
           				<a class="navbar-brand" href="#">Poster</a>
         			</div>
       				<div class="navbar-collapse collapse">
-          				<form class="navbar-form navbar-right" method = 'post' action = "blog-ex-login-user.php" role="form">
+          				<form class="navbar-form navbar-right" method = 'post' action = "blog-login.php" role="form">
             					<div class="form-group">
               					<input type="text" placeholder="Username" name = "user" id = "user" class="form-control">
             					</div>
@@ -134,6 +155,7 @@ print <<<EOT
 EOT;
 }
 
+// prints the search form that appears in the navigation bar at the top of most pages
 function printSearchForm(){
 print <<<EOT
 	<form class="navbar-form navbar-right" role="search" action=searchResults.php>
@@ -146,11 +168,10 @@ EOT;
 }
 
 // prints the page that appears if the user enters an incorrect username/password combination
-function printPageHeader2() {
+function printIncorrectLoginPage() {
 	printLoginForm();
 
 	print <<<EOT
-		<!-- Main jumbotron for a primary marketing message or call to action -->
     		<div class="jumbotron">
       			<div class="container">
         			<h1></h1>
@@ -161,30 +182,29 @@ function printPageHeader2() {
 EOT;
 }
 
-// prints the page that appears if the user has not yet activated the email
-function printPageHeader3() {
+// prints the page that appears if the user has not yet activated their account by using the link that was emailed to them
+function printActivationNeeded() {
   printLoginForm();
-
   print <<<EOT
-    <!-- Main jumbotron for a primary marketing message or call to action -->
         <div class="jumbotron">
             <div class="container">
               <h1></h1>
-                <p>You have not yet activated your account. Please check your email for an authentication link.</p>
-                
+                <p>You have not yet activated your account. Please check your email for an authentication link.</p>             
             </div>
         </div>
 EOT;
 }
 
+// checks to see if the user has activated their email
 function checkActivated($dbh, $username, $password){
-	$preparedquery = "select * from blog_user where user = ? and pass = ?";
-	$resultset = prepared_query($dbh, $preparedquery, array($username, $password));
-	while ($row = $resultset -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-		$user = $row['user'];
-		$activation = $row['activation'];
-		$result = ($activation == NULL);
-		}
+	$activationQuery = "select * from blog_user where user = ? and pass = ?";
+	$resultset = prepared_query($dbh, $activationQuery, array($username, $password));
+	$row = $resultset -> fetchRow(MDB2_FETCHMODE_ASSOC);
+	$user = $row['user'];
+	$activation = $row['activation'];
+
+	// if "activation" is NULL, the user's account has been activated
+	$result = ($activation == NULL);
 	return $result;
 }
 
@@ -242,17 +262,10 @@ print <<<EOT
 
     			<!-- Custom styles for this template -->
     			<link href="jumbotron.css" rel="stylesheet">
+
 			<!-- Custom styles for this template -->
     			<link href="bootstrap-3.1.1-dist/css/blog.css" rel="stylesheet"> 
 
-    			<!-- Just for debugging purposes. Don''t actually copy this line! -->
-    			<!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
-    			<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    			<!--[if lt IE 9]>
-      				<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      				<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    			<![endif]-->
 			<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 			<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 			<script src="bootstrap-3.1.1-dist/js/bootstrap-modal.js"></script>
@@ -276,7 +289,6 @@ function printCommentModal($modaldivid, $action, $id, $usercol){
 							<form class="form-horizontal" method="post" enctype = "multipart/form-data" action = $action>  
           							<textarea name="blogComment" id = "blogComment" class="input-xlarge" rows="5" cols="60"></textarea>
 								<input type="hidden" value=$id name = "entryId" id="entryId" class="form-control">
-								<input type="hidden" value=$usercol name = "postAuthor" id="postAuthor" class="form-control">
         					</div>
         					<div class="modal-footer">
           						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -286,7 +298,6 @@ function printCommentModal($modaldivid, $action, $id, $usercol){
       					</div><!-- /.modal-content -->
     				</div><!-- /.modal-dialog -->
   			</div><!-- /.modal -->
-
 EOT;
 }
 
@@ -305,15 +316,37 @@ print <<<EOT
     		<div id=$commentsdivid class="panel-collapse collapse">
       	<div class="panel-body">
 EOT;
-	$preparedquery3 = "select * from comments where entry_id = ? order by date(comment_time) desc, time(comment_time) desc";
-	$resultset3 = prepared_query($dbh, $preparedquery3, $id);
-	while ($row3 = $resultset3 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-		$comment_text = $row3['comment_text'];
-		$commenting_user = $row3['commenting_user'];
+	// get the comments that correspond to a particular post
+	$getComments = "select * from comments where entry_id = ? order by date(comment_time) desc, time(comment_time) desc";
+	$commentsResults = prepared_query($dbh, $getComments, $id);
+	while ($row = $commentsResults -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+		$comment_text = $row['comment_text'];
+		$commenting_user = $row['commenting_user'];
 		print <<<EOT
        		<p><a href="toBlog.php?user=$commenting_user">$commenting_user</a> said: $comment_text </p>
 EOT;
 }
+print <<<EOT
+      							</div>
+    						</div>
+  					</div>
+				</div>
+EOT;
+}
+
+// prints the top of each user's blog, which simply displays the user's username
+function printBlogTop($user){
+print <<<EOT
+        			</nav>
+      			</div>
+    		</div>
+    		<div class="container">
+      			<div class="blog-header">
+        			<h1 class="blog-title">$user</h1>
+      			</div>
+      			<div class="row">
+      			<div class="col-sm-8 blog-main">
+EOT;
 }
 
 // display the users that have liked a post
@@ -331,14 +364,23 @@ function printViewLikes($hrefid, $divid, $dbh, $id){
     			<div id=$divid class="panel-collapse collapse">
       		<div class="panel-body">
 EOT;
-	$preparedquery3 = "select * from likes where entry_id = ? order by date(like_time) desc, time(like_time) desc";
-	$resultset3 = prepared_query($dbh, $preparedquery3, $id);
-	while ($row3 = $resultset3 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-		$likinguser = $row3['liking_user'];
+	// get the names of the users who have liked the post
+	$getLikes = "select * from likes where entry_id = ? order by date(like_time) desc, time(like_time) desc";
+	$likesResults = prepared_query($dbh, $getLikes, $id);
+	while ($row = $likesResults -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+		$likinguser = $row['liking_user'];
 		print <<<EOT
 			<p><a href="toBlog.php?user=$likinguser">$likinguser</a> liked this </p>
 EOT;
 	}
+print <<<EOT
+      							</div>
+    						</div>
+  					</div>
+				</div>		
+            			<hr>
+				</div>
+EOT;
 }
 
 // prints the blog of the user who is currently logged in
@@ -359,43 +401,30 @@ function printBlog($dbh, $user){
            				</ul>
 EOT;
 printSearchForm();
-print <<<EOT
-        			</nav>
-      			</div>
-    		</div>
+printBlogTop($user);
 
-    		<div class="container">
-      			<div class="blog-header">
-        			<h1 class="blog-title">$user</h1>
-        			<!-- <p class="lead blog-description">Blog description goes here</p> -->
-      			</div>
-      			<div class="row">
-      			<div class="col-sm-8 blog-main">
-EOT;
-	$profile = '';
-	$preparedquery1 = "SELECT profile FROM profile where user = ?";
-	$resultset1 = prepared_query($dbh, $preparedquery1, $user);
-
-	while ($row1 = $resultset1 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-  		$profile = $row1['profile'];
-	}
-
-  	$preparedquery2 = "SELECT * from blog_entry where user = ? order by date(entered) desc, time(entered) desc";
-  	//Get all the blog entries
-	$resultset2 = prepared_query($dbh, $preparedquery2, $user);
-	while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-		$usercol = $row2['user'];
-		$time = $row2['entered'];
-		$image = $row2['entry'];
-		$entry = $row2['caption'];
-		$title = $row2['title'];
-		$id = $row2['entry_id'];
+	// get all of the posts that were created by the currently logged-in user
+	// we have a similar query in other methods because the other contents of the page (comment, like, delete buttons, etc.) 
+	// are displayed in a while loop while the database is queried, so it is not particularly efficient to try to contain the
+	// queries in a function
+  	$preparedquery = "SELECT * from blog_entry where user = ? order by date(entered) desc, time(entered) desc";
+	$resultset = prepared_query($dbh, $preparedquery, $user);
+	while ($row = $resultset -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+		$usercol = $row['user'];
+		$time = $row['entered'];
+		$image = $row['entry'];
+		$entry = $row['caption'];
+		$title = $row['title'];
+		$id = $row['entry_id'];
 		$hrefid = "#"."div".$id;
 		$divid = "div".$id;
 		$modalhrefid = "#"."modaldiv".$id;
 		$modaldivid = "modaldiv".$id;
 		$commentshrefid = "#"."commentsdiv".$id;
 		$commentsdivid = "commentsdiv".$id;
+
+		// check to ensure that the posts displaying belong to the currently logged in user, then give the
+		// option to delete posts
     		if (!strcmp($usercol, $user)){  
 print <<<EOT
           			<div class="blog-post">
@@ -407,46 +436,14 @@ print <<<EOT
 					
 EOT;
 
-printCommentModal($modaldivid, 'blog-ex-comment-user.php', $id, $usercol); 
-printViewComments($commentshrefid, $commentsdivid, $dbh, $id);	
-
-print <<<EOT
-      							</div>
-    						</div>
-  					</div>
-				</div>
-EOT;
-printViewLikes($hrefid, $divid, $dbh, $id);
-print <<<EOT
-      						</div>
-    					</div>
-  				</div>
-			</div>
-		
-            			<hr>
- 
-
-
-				</div>
-EOT;
+					printCommentModal($modaldivid, 'blog-ex-comment-user.php', $id, $usercol); 
+					printViewComments($commentshrefid, $commentsdivid, $dbh, $id);	
+					printViewLikes($hrefid, $divid, $dbh, $id);
 	 	}
 	}
-print <<<EOT
-		</div><!-- /.blog-main -->  
-        	<div class="col-sm-3 col-sm-offset-1 blog-sidebar">
-          		<div class="sidebar-module sidebar-module-inset">
-            			<h4>About</h4>
-            			<p>$profile</p>
-          		</div>  
-        	</div><!-- /.blog-sidebar -->
-
-      		</div><!-- /.row -->
-
-    		</div><!-- /.container -->
-EOT;
+printUserProfile($dbh, $user);
 printBlogFooter();
 }
-
 
 // print the page where the user can choose whether the type of post they will upload
 function printPostPage(){
@@ -465,7 +462,7 @@ function printPostPage(){
              					<li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
            				</ul>
 EOT;
-printSearchForm();
+					printSearchForm();
 print <<<EOT
         			</nav>
       			</div>
@@ -499,7 +496,7 @@ function printAllPosts($dbh){
              					<li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
            				</ul>
 EOT;
-printSearchForm();
+					printSearchForm();
 print <<<EOT
         			</nav>
       			</div>
@@ -513,15 +510,15 @@ print <<<EOT
       					</div>
 EOT;
 
-  	$resultset2 = $dbh->query("SELECT * from blog_entry ORDER BY entered DESC LIMIT 20");
-  	//Get all the blog entries, including, presumably, the one just added, if any
- 	while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-		$user = $row2['user'];
-		$time = $row2['entered'];
-		$image = $row2['entry'];
-		$entry = $row2['caption'];
-		$title = $row2['title'];
-		$id = $row2['entry_id'];
+	// get the most recent 20 blog posts from all users to display
+  	$allPosts = $dbh->query("SELECT * from blog_entry ORDER BY entered DESC LIMIT 20");
+ 	while ($row = $allPosts -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+		$user = $row['user'];
+		$time = $row['entered'];
+		$image = $row['entry'];
+		$entry = $row['caption'];
+		$title = $row['title'];
+		$id = $row['entry_id'];
 		$hrefid = "#"."div".$id;
 		$divid = "div".$id;
 		$modalhrefid = "#"."modaldiv".$id;
@@ -530,32 +527,39 @@ EOT;
 		$commentsdivid = "commentsdiv".$id;
 print <<<EOT
           		<div class="blog-post">
-            		<h2 class="blog-post-title">$title</h2>
-            		<p class="blog-post-meta">$time by <a href="toBlog.php?user=$user">$user</a></p>
-  			<p> <img class = 'img-responsive' src='$image'></p>
-            		<p> $entry </p> 
+            			<h2 class="blog-post-title">$title</h2>
+            			<p class="blog-post-meta">$time by <a href="toBlog.php?user=$user">$user</a></p>
+  				<p> <img class = 'img-responsive' src='$image'></p>
+            			<p> $entry </p> 
 EOT;
-$currentuser = $_COOKIE['304bloguserphp'];
-			$preparedquery4 = "select * from likes where entry_id = ? and liking_user = ?";
-			$resultset4 = prepared_query($dbh, $preparedquery4, array($id, $currentuser));
-			$resultset4check = $resultset4 -> numRows();
-			if ($resultset4check == 0 & !strcmp($user, $currentuser)){
+error_reporting(0);
+session_start();
+$currentuser = $_SESSION['user'];
+
+			// check to see if the current user has already liked this post
+			$likedCheck = "select * from likes where entry_id = ? and liking_user = ?";
+			$likedResults = prepared_query($dbh, $likedCheck, array($id, $currentuser));
+			$likeResultsCheck = $likedResults -> numRows();
+
+			// if the post belongs to the current user, do not supply a like button
+			if ($likeResultsCheck == 0 & !strcmp($user, $currentuser)){
 				print <<<EOT
 					<a data-toggle="modal" href=$modalhrefid>Comment</a>
 EOT;
 				printCommentModal($modaldivid, 'viewAllPage.php', $id, $user);
 				printViewComments($commentshrefid, $commentsdivid, $dbh, $id);
 }
-			else if ($resultset4check == 0){
+			// if the post belongs to someone else and the user has not liked it, provide a like button
+			else if ($likeResultsCheck == 0){
 				print <<<EOT
 					<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   <a href = "viewAllPage.php?entry_id=$id&posting_user=$user">Like</a>   </p>
 
 EOT;
 				printCommentModal($modaldivid, 'viewAllPage.php', $id, $user);
 				printViewComments($commentshrefid, $commentsdivid, $dbh, $id);
-
 			}
-
+			
+			// otherwise, the user has already liked it
 			else{
 				print <<<EOT
 					<p><a data-toggle="modal" href=$modalhrefid>Comment</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Liked   </p>				
@@ -564,36 +568,13 @@ EOT;
 				printViewComments($commentshrefid, $commentsdivid, $dbh, $id);
 			}
 
-	
-
-print <<<EOT
-      							</div>
-    						</div>
-  					</div>
-				</div>
-EOT;
 printViewLikes($hrefid, $divid, $dbh, $id);
-
-print <<<EOT
-      						</div>
-    					</div>
-  				</div>
-			</div>
-		
-            			<hr>
- 
-
-
-				</div>
-EOT;
 	}
 print <<<EOT
 		</div><!-- /.blog-main -->  
       		</div><!-- /.row -->
-
     		</div><!-- /.container -->
 EOT;
-
 printBlogFooter();
 }
 
@@ -618,12 +599,16 @@ print <<<EOT
 
 EOT;
 	$result = 0;
-	$preparedquery2 = "SELECT following FROM follows where user = ?";
-	$msg = "button0";
-  	//Get all the blog entries, including, presumably, the one just added, if any
-	$resultset2 = prepared_query($dbh, $preparedquery2, $user2);
- 	while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-		$following = $row2['following'];
+	
+	// get all of the users the currently logged-in user is following, to print the 
+	// follow/un-follow buttons on the page
+	$preparedquery = "SELECT following FROM follows where user = ?";
+	$resultset = prepared_query($dbh, $preparedquery, $user2);
+
+	// the current user may be following many users; go through them and if you find that they are following the one that
+	// corresponds to this blog, break from the loop
+ 	while ($row = $resultset -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+		$following = $row['following'];
 		$result = ($following == $user);
 		if ($result == 1){
 			break;
@@ -631,6 +616,7 @@ EOT;
 	}
 
 	if ($result == 1){
+	// the user is currently following this blog; print an un-follow button
 print <<<EOT
 	<div class="container">
       				<div class="blog-header">
@@ -649,6 +635,7 @@ print <<<EOT
 EOT;
 	}
 	else{
+	// the user is not currently following this blog; print a follow button
 print <<<EOT
 	<div class="container">
 				<div class="blog-header">
@@ -665,32 +652,12 @@ print <<<EOT
           		</form>
 EOT;
 	}
-	$preparedquery = "SELECT user FROM blog_user where user = ?";
-  	//Get all the blog entries, including, presumably, the one just added, if any
-	$resultset = prepared_query($dbh, $preparedquery, $user);
- 	while ($row = $resultset -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-		$username = $row['user'];
-}
-print <<<EOT
-    		<div class="container">
-      			<div class="blog-header">
-        			<h1 class="blog-title">$user</h1>
-        			<!-- <p class="lead blog-description">Blog description goes here</p> -->
-      			</div>
-      			<div class="row">
-				<div class="col-sm-8 blog-main">
-EOT;
-	$profile = '';
-	$preparedquery1 = "SELECT profile FROM profile where user = ?";
-	$resultset1 = prepared_query($dbh, $preparedquery1, $user);
-	while ($row1 = $resultset1 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-  		$profile = $row1['profile'];
-	}
+printBlogTop($user);
 
-  	$preparedquery2 = "SELECT * from blog_entry where user = ?  order by date(entered) desc, time(entered) desc";
-  	//Get all the blog entries, including, presumably, the one just added, if any
-	$resultset2 = prepared_query($dbh, $preparedquery2, $user);
- 	while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+	// get all of the blog posts from this user
+  	$postsQuery = "SELECT * from blog_entry where user = ?  order by date(entered) desc, time(entered) desc";
+	$postsResults = prepared_query($dbh, $postsQuery, $user);
+ 	while ($row2 = $postsResults -> fetchRow(MDB2_FETCHMODE_ASSOC)){
 		$usercol = $row2['user'];
 		$time = $row2['entered'];
 		$image = $row2['entry'];
@@ -710,7 +677,9 @@ print <<<EOT
   				<p> <img class = 'img-responsive' src = '$image'> </p>
             			<p> $entry </p> 
 EOT;
-$currentuser = $_COOKIE['304bloguserphp'];
+error_reporting(0);
+session_start();
+$currentuser = $_SESSION['user'];
 			$preparedquery4 = "select * from likes where entry_id = ? and liking_user = ?";
 			$resultset4 = prepared_query($dbh, $preparedquery4, array($id, $currentuser));
 			$resultset4check = $resultset4 -> numRows();
@@ -727,96 +696,50 @@ EOT;
 }
 printViewComments($commentshrefid, $commentsdivid, $dbh, $id);
 	
-
-print <<<EOT
-      							</div>
-    						</div>
-  					</div>
-				</div>
-EOT;
 printViewLikes($hrefid, $divid, $dbh, $id);
-
-print <<<EOT
-      							</div>
-    						</div>
-  					</div>
-				</div>
-		
-            			<hr>
- 
-
-
-				</div>
-EOT;
 }
-print <<<EOT
-			</div><!-- /.blog-main -->  
-        		<div class="col-sm-3 col-sm-offset-1 blog-sidebar">
-          			<div class="sidebar-module sidebar-module-inset">
-            				<h4>About</h4>
-            				<p>$profile</p>
-          			</div>
-        
-        		</div><!-- /.blog-sidebar -->
-
-      			</div><!-- /.row -->
-
-    			</div><!-- /.container -->
-EOT;
-
+printUserProfile($dbh, $user);
 printBlogFooter();
 }
 
 
 // prints a page showing the users that are currently following you
 function printFollowersPage($dbh, $user){
-printPageTop('Followers');
+	printPageTop('Followers');
 print <<<EOT
-			    
-    		<div class="blog-masthead">
-       <div class="container">
-         <nav class="blog-nav">
-           <ul class="nav navbar-nav">
-             <li><a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a></li>
-             <li><a class="blog-nav-item" href = "postPage.php?type=">Post</a></li>
-             <li><a class="blog-nav-item active" href="#">Followers</a></li>
-             <li><a class="blog-nav-item" href="followingPage.php">Following</a></li>
-             <li><a class="blog-nav-item" href ="myprofile.php">Profile</a></li>
-             <li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
-             <li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
-           </ul>
+	<div class="blog-masthead">
+       	<div class="container">
+         		<nav class="blog-nav">
+           			<ul class="nav navbar-nav">
+             				<li><a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a></li>
+             				<li><a class="blog-nav-item" href = "postPage.php?type=">Post</a></li>
+             				<li><a class="blog-nav-item active" href="#">Followers</a></li>
+             				<li><a class="blog-nav-item" href="followingPage.php">Following</a></li>
+             				<li><a class="blog-nav-item" href ="myprofile.php">Profile</a></li>
+             				<li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
+             				<li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
+           			</ul>
 EOT;
-printSearchForm();
+				printSearchForm();
 print <<<EOT
-        </nav>
-      </div>
-    </div>
-
+        		</nav>
+      		</div>
+    	</div>
 EOT;
 print <<<EOT
     	<div class="container">
-
       		<div class="blog-header">
         		<h1 class="blog-title">$user</h1>
         		<p class="lead blog-description">Here are the users that are following you.</p>
       		</div>
-
       		<div class="row">
 			<div class="col-sm-8 blog-main">
 EOT;
-
-	$profile = '';
-	$preparedquery1 = "SELECT profile FROM profile where user = ?";
-	$resultset1 = prepared_query($dbh, $preparedquery1, $user);
-	while ($row1 = $resultset1 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-  		$profile = $row1['profile'];
-	}
-
-  	$preparedquery2 = "SELECT user FROM follows where following = ?";
+  	$getFollowers = "SELECT user FROM follows where following = ?";
   	//Get all the blog entries
-	$resultset2 = prepared_query($dbh, $preparedquery2, $user);
- 	while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-		$follower = $row2['user'];
+	$followersResults = prepared_query($dbh, $getFollowers, $user);
+ 	while ($row = $followersResults -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+		$follower = $row['user'];
 print <<<EOT
 		<div class="blog-post">
             		<p class="blog-post-meta"><a href="toBlog.php?user=$follower">$follower</a></p>
@@ -831,6 +754,7 @@ EOT;
 printBlogFooter();
 }
 
+// prints the page footer that gives credit to Bootstrap for the templates
 function printBlogFooter(){
 print <<<EOT
 	<div class="blog-footer">
@@ -841,34 +765,33 @@ print <<<EOT
     	</div>
 EOT;
 }
+
 // prints the page displaying the users that you are currently following
 function printFollowingPage($dbh, $user){
-printPageTop('Following');
+	printPageTop('Following');
 print <<<EOT
-			    
-    		<div class="blog-masthead">
-       <div class="container">
-         <nav class="blog-nav">
-           <ul class="nav navbar-nav">
-             <li><a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a></li>
-             <li><a class="blog-nav-item" href = "postPage.php?type=">Post</a></li>
-             <li><a class="blog-nav-item" href="followersPage.php">Followers</a></li>
-             <li><a class="blog-nav-item active" href="#">Following</a></li>
-             <li><a class="blog-nav-item" href ="myprofile.php">Profile</a></li>
-             <li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
-             <li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
-           </ul>
+	<div class="blog-masthead">
+       	<div class="container">
+         		<nav class="blog-nav">
+           			<ul class="nav navbar-nav">
+             				<li><a class="blog-nav-item" href="blog-ex-comment-user.php">Blog</a></li>
+             				<li><a class="blog-nav-item" href = "postPage.php?type=">Post</a></li>
+             				<li><a class="blog-nav-item" href="followersPage.php">Followers</a></li>
+             				<li><a class="blog-nav-item active" href="#">Following</a></li>
+             				<li><a class="blog-nav-item" href ="myprofile.php">Profile</a></li>
+             				<li><a class="blog-nav-item" href = "toHomePage.php">Home</a></li>
+             				<li><a class="blog-nav-item" href = "logoutPage.php">Logout</a></li>
+           			</ul>
 EOT;
-printSearchForm();
+				printSearchForm();
 print <<<EOT
-        </nav>
-      </div>
+        		</nav>
+      		</div>
     </div>
 
 EOT;
 print <<<EOT
     	<div class="container">
-
       		<div class="blog-header">
         		<h1 class="blog-title">$user</h1>
         		<p class="lead blog-description">Here are the users that you are following.</p>
@@ -877,20 +800,12 @@ print <<<EOT
       		<div class="row">
 			<div class="col-sm-8 blog-main">
 EOT;
-	$profile = '';
-	$preparedquery1 = "SELECT profile FROM profile where user = ?";
-	$resultset1 = prepared_query($dbh, $preparedquery1, $user);
-	while ($row1 = $resultset1 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-  		$profile = $row1['profile'];
-	}
 
-  	$preparedquery2 = "SELECT following FROM follows where user = ?";
-  	//Get all the blog entries, including, presumably, the one just added, if any
-	$resultset2 = prepared_query($dbh, $preparedquery2, $user);
- 	while ($row2 = $resultset2 -> fetchRow(MDB2_FETCHMODE_ASSOC)){
-		$following = $row2['following'];
-    	
-	
+	// Get a list of users that you are currently following and display on page
+  	$getFollowing = "SELECT following FROM follows where user = ?";
+	$followingResults = prepared_query($dbh, $getFollowing, $user);
+ 	while ($row = $followingResults -> fetchRow(MDB2_FETCHMODE_ASSOC)){
+		$following = $row['following'];	
 print <<<EOT
         
           	<div class="blog-post">
@@ -906,145 +821,146 @@ print <<<EOT
 EOT;
 
 printBlogFooter();
-
 }
 
-// print the sign up page
+// print the sign up page and add new users to the database
 function signUp($dbh){
-  if (isset ($_POST['username']) && isset($_POST['password'])) {
-    $username = htmlspecialchars($_POST['username']);
-    $password = htmlspecialchars($_POST['password']);
-    $email = $_POST['email']; 
+	if (isset ($_POST['username']) && isset($_POST['password'])) {
+    		$username = htmlspecialchars($_POST['username']);
+    		$password = htmlspecialchars($_POST['password']);
+    		$email = $_POST['email']; 
 
-    $user_check = query($dbh,"SELECT user FROM blog_user WHERE user='$username'"); 
-    $do_usercheck = $user_check -> numRows();
+		// users are not allowed to have the same username or email as another user
+    		$user_check = query($dbh,"SELECT user FROM blog_user WHERE user='$username'"); 
+    		$do_usercheck = $user_check -> numRows();
 
-    $email_check = query($dbh,"SELECT email from blog_user WHERE email='$email'");
-    $do_emailcheck = $email_check -> numRows();
+    		$email_check = query($dbh,"SELECT email from blog_user WHERE email='$email'");
+    		$do_emailcheck = $email_check -> numRows();
 
-    echo '<div class="container"><center>';
+    		echo '<div class="container"><center>';
      
-    if ($do_usercheck > 0) {
-      echo "<h4> Username is already in use!</h4>"; 
-    } if ($do_emailcheck > 0) {
-      echo "<h4> Email is already in use!</h4>"; 
-    } if (($do_usercheck == 0) && ($do_emailcheck ==0)) {
-      //unique activation code
-      $activation = md5(uniqid(rand(),true)); 
-      //password crypt
-      $crypt = crypt($password);
-      $preparedquery = "INSERT into blog_user VALUES (?,?,?,?,?)";
-      $resultset = prepared_query($dbh,$preparedquery,array($username,$password,$crypt,$email,$activation)); 
+		// inform the user if they need to use a different email or password
+		// otherwise, insert the user into the database
+    		if ($do_usercheck > 0) {
+      			echo "<h4> Username is already in use!</h4>"; 
+    		} if ($do_emailcheck > 0) {
+      			echo "<h4> Email is already in use!</h4>"; 
+    		} if (($do_usercheck == 0) && ($do_emailcheck ==0)) {
+      			//unique activation code
+      			$activation = md5(uniqid(rand(),true)); 
 
-      $profilequery = "INSERT into profile VALUES (?,?,?,?,?,?,?,?)";
-      $resultset2 = prepared_query($dbh,$profilequery,array($username,NULL,NULL,NULL,NULL,NULL,NULL,NULL));
+      			//password crypt
+      			$crypt = crypt($password);
 
-      if ($resultset) {
-        //mail message
-        $message = " To activate your account, please click on this link:\n\n";
-        $message .= 'cs.wellesley.edu/~cmatulis/project/activate.php?email=' . urlencode($email) . "&key=$activation";
-	 error_reporting(E_ERROR | E_PARSE);
-        mail($email, 'Registration Confirmation', $message, 'From: slee14@wellesley.edu');
-        echo "<h4> You are now registered. Go to your email and click on the activation link to start blogging.</h4>";
-      }
-    }
+      			$preparedquery = "INSERT into blog_user VALUES (?,?,?,?,?)";
+      			$resultset = prepared_query($dbh,$preparedquery,array($username,$password,$crypt,$email,$activation)); 
+
+      			$profilequery = "INSERT into profile VALUES (?,?,?,?,?,?,?,?)";
+      			$resultset2 = prepared_query($dbh,$profilequery,array($username,NULL,NULL,NULL,NULL,NULL,NULL,NULL));
+
+			// send the user an email that will allow them to activate their account
+      			if ($resultset) {
+        			//mail message
+        			$message = " To activate your account, please click on this link:\n\n";
+        			$message .= 'cs.wellesley.edu/~cmatulis/project/activate.php?email=' . urlencode($email) . "&key=$activation";
+	 			error_reporting(E_ERROR | E_PARSE);
+        			mail($email, 'Registration Confirmation', $message, 'From: slee14@wellesley.edu');
+        			echo "<h4> You are now registered. Go to your email and click on the activation link to start blogging.</h4>";
+      			}
+    		}
     echo "</center></div>";
   }
 }
 
 // search for posts
 function post($query,$dbh) {
-  $self = $_SERVER['PHP_SELF']; 
-  $preparedquery = "SELECT * FROM blog_entry WHERE caption LIKE ? OR title LIKE ?"; 
-  $resultset = prepared_query($dbh,$preparedquery,array("%$query%","%$query%")); 
-  $size = $resultset -> numRows();
-  if ($size === 0) {
-    echo "<h2>No Posts Found</h2>";
-  } else {
-      while($row = $resultset->fetchRow(MDB2_FETCHMODE_ASSOC)) {
-        $user = $row['user'];
-        $title = $row['title'];
-        $time = $row['entered'];
-        $image = $row['entry'];
-        $entry = $row['caption'];
+  	$self = $_SERVER['PHP_SELF']; 
 
-        echo "
-        <div class='blog-post'>
-                <h2 class='blog-post-title'>$title</h2>
-                <p class='blog-post-meta'>$time by <a href='toBlog.php?user=$user'>$user</a></p>
-          <p> <img class = 'img-responsive' src='$image'> </p>
-                <p> $entry </p> 
-                <hr>
-         </div> <!-- blog-post> 
+	// search for posts that match the user's query
+  	$preparedquery = "SELECT * FROM blog_entry WHERE caption LIKE ? OR title LIKE ?"; 
+  	$resultset = prepared_query($dbh,$preparedquery,array("%$query%","%$query%")); 
+  	$size = $resultset -> numRows();
+  	if ($size === 0) {
+    		echo "<h2>No Posts Found</h2>";
+  	} else {
+      		while($row = $resultset->fetchRow(MDB2_FETCHMODE_ASSOC)) {
+        		$user = $row['user'];
+        		$title = $row['title'];
+        		$time = $row['entered'];
+        		$image = $row['entry'];
+        		$entry = $row['caption'];
 
-  <!--
-                <ul class='pager'>
-                  <li><a href='#'>Previous</a></li>
-                  <li><a href='#'>Next</a></li>
-                </ul>
-  --> 
+			// display matching posts, if any
+        		echo "
+        			<div class='blog-post'>
+                			<h2 class='blog-post-title'>$title</h2>
+                			<p class='blog-post-meta'>$time by <a href='toBlog.php?user=$user'>$user</a></p>
+          				<p> <img class = 'img-responsive' src='$image'> </p>
+                			<p> $entry </p> 
+                			<hr>
+         			</div> <!-- blog-post> 
     
-      ";
-      }
-  }
+      			";
+      		}
+  	}
 }
 
 // search for users
 function user($query,$dbh) {
-  $self = $_SERVER['PHP_SELF'];
-  $preparedquery = "SELECT user from blog_user WHERE user LIKE ?"; 
-  $resultset = prepared_query($dbh,$preparedquery,"%$query%");
+  	$self = $_SERVER['PHP_SELF'];
+  	$preparedquery = "SELECT user from blog_user WHERE user LIKE ?"; 
+  	$resultset = prepared_query($dbh,$preparedquery,"%$query%");
 
-  //$resultset = query($dbh,"SELECT user FROM blog_user WHERE user LIKE '%$query%' 
-  //                  ORDER BY user asc"); 
-  $size = $resultset -> numRows(); 
-  if ($size === 0) {
-    echo "<h2>No Users Found</h2>";
-  } else {
-    echo "
-    <div class='blog-post'>
-    ";  
-    while($row = $resultset->fetchRow(MDB2_FETCHMODE_ASSOC)) {
-      $user = $row['user'];
-      echo "<h2><a href='toBlog.php?user=$user'>$user</a></h2>";   
-    }
-    echo "</div>"; //<!-- blog-post> 
-  }
+  	$size = $resultset -> numRows(); 
+  	if ($size === 0) {
+    		echo "<h2>No Users Found</h2>";
+  	} else {
+    		echo "
+    		<div class='blog-post'>
+    		";  
+    		while($row = $resultset->fetchRow(MDB2_FETCHMODE_ASSOC)) {
+      			$user = $row['user'];
+      			echo "<h2><a href='toBlog.php?user=$user'>$user</a></h2>";   
+    		}
+    		echo "</div>"; //<!-- blog-post> 
+  	}
 }
 
 // search by profile
 function findProfile($dbh,$user,$query) {
-  $preparedquery = "SELECT $query FROM profile WHERE user = ?"; 
-  $resultset = prepared_query($dbh,$preparedquery,$user); 
-  $row = $resultset->fetchRow(MDB2_FETCHMODE_ASSOC);
-  $row2 = $row[$query];
-  $size = $resultset -> numRows();
-  if ($size > 0) {
-    echo "
-      <div class='col-md-8'><h4>$row2</h4></div>"; 
-  } else { 
-      echo "";
+	$preparedquery = "SELECT $query FROM profile WHERE user = ?"; 
+  	$resultset = prepared_query($dbh,$preparedquery,$user); 
+  	$row = $resultset->fetchRow(MDB2_FETCHMODE_ASSOC);
+  	$row2 = $row[$query];
+  	$size = $resultset -> numRows();
+  	if ($size > 0) {
+    		echo "
+      		<div class='col-md-8'><h4>$row2</h4></div>"; 
+  	} else { 
+      		echo "";
     }
 }
-//save information for profile
-function saveInfo($dbh,$user) {
-  if (isset($_POST['birthdate'])) {
-  	$fullname = htmlspecialchars($_POST['fullname']);
-  	$birthdate = htmlspecialchars($_POST['birthdate']);
-  	$city = htmlspecialchars($_POST['city']);
-  	$state = htmlspecialchars($_POST['state']);
-  	$country = htmlspecialchars($_POST['country']);
-  	$interests = htmlspecialchars($_POST['interests']);
-  	$profile = htmlspecialchars($_POST['aboutme']);
 
-    prepared_query($dbh,"UPDATE profile SET fullname=? WHERE user= ?", array($fullname, $user)); 
-   	prepared_query($dbh,"UPDATE profile SET birthdate=? WHERE user= ?", array($birthdate, $user)); 
-    prepared_query($dbh,"UPDATE profile SET city=? WHERE user= ?", array($city, $user)); 
-    prepared_query($dbh,"UPDATE profile SET state=? WHERE user= ?", array($state, $user)); 
-  	prepared_query($dbh,"UPDATE profile SET country=? WHERE user= ?", array($country, $user)); 
-  	prepared_query($dbh,"UPDATE profile SET interests=? WHERE user= ?", array($interests, $user)); 
-  	prepared_query($dbh,"UPDATE profile SET profile=? WHERE user= ?", array($profile, $user)); 
-  }
+// save the user's updated profile information
+function saveInfo($dbh,$user) {
+	if (isset($_POST['birthdate'])) {
+  		$fullname = htmlspecialchars($_POST['fullname']);
+  		$birthdate = htmlspecialchars($_POST['birthdate']);
+  		$city = htmlspecialchars($_POST['city']);
+  		$state = htmlspecialchars($_POST['state']);
+  		$country = htmlspecialchars($_POST['country']);
+  		$interests = htmlspecialchars($_POST['interests']);
+  		$profile = htmlspecialchars($_POST['aboutme']);
+
+		// update the database
+    		prepared_query($dbh,"UPDATE profile SET fullname=? WHERE user= ?", array($fullname, $user)); 
+   		prepared_query($dbh,"UPDATE profile SET birthdate=? WHERE user= ?", array($birthdate, $user)); 
+    		prepared_query($dbh,"UPDATE profile SET city=? WHERE user= ?", array($city, $user)); 
+    		prepared_query($dbh,"UPDATE profile SET state=? WHERE user= ?", array($state, $user)); 
+  		prepared_query($dbh,"UPDATE profile SET country=? WHERE user= ?", array($country, $user)); 
+  		prepared_query($dbh,"UPDATE profile SET interests=? WHERE user= ?", array($interests, $user)); 
+  		prepared_query($dbh,"UPDATE profile SET profile=? WHERE user= ?", array($profile, $user)); 
+  	}
 }
 
 

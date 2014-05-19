@@ -16,13 +16,15 @@ require_once("/students/cmatulis/public_html/cs304/cmatulis-dsn.inc");
 
 $dbh = db_connect($cmatulis_dsn);
 
+session_start();
+
 // if the user is not logged in, redirect to the login page
-if(!isset($_COOKIE['304bloguserphp'])) {
-    header('Location: blog-ex-login-user.php');
+if(!isset($_SESSION['user'])) {
+    header('Location: blog-login.php');
 }
 
 // get the currently logged-in user
-$user = $_COOKIE['304bloguserphp']; 
+$user = $_SESSION['user']; 
 
 // display the page with the user's followers
 printFollowersPage($dbh, $user);

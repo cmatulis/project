@@ -16,12 +16,14 @@ require_once("/students/cmatulis/public_html/cs304/cmatulis-dsn.inc");
 
 $dbh = db_connect($cmatulis_dsn);
 
+session_start();
+
 // if a user is not currently logged in, redirect to the home page
-if(!isset($_COOKIE['304bloguserphp'])) {
-    header('Location: blog-ex-login-user.php');
+if(!isset($_SESSION['user'])) {
+    header('Location: blog-login.php');
 }
 
-$user = $_COOKIE['304bloguserphp'];
+$user = $_SESSION['user'];
 ?> 
 
 <!DOCTYPE html>
@@ -62,8 +64,9 @@ $user = $_COOKIE['304bloguserphp'];
       		<br>
 
 		<?php
+			//Get the user's current profile and
+			// print a form pre-filled with the current profile
  			$preparedquery = "SELECT * from profile where user = ?";
-  			//Get all the user's current profile
 			$resultset = prepared_query($dbh, $preparedquery, $user);
 			while ($row = $resultset -> fetchRow(MDB2_FETCHMODE_ASSOC)){
 				$fullname = $row['fullname'];

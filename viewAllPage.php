@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * viewAllPage.php
+ * Sojung Lee & Catherine Matulis
+ * May 2014 
+ * CS304
+ *
+ * Generates the page that will display the most recent (20) posts from all
+ * users of the site
+ */
 require_once("MDB2.php");
 require_once("/home/cs304/public_html/php/MDB2-functions.php");
 require_once("/students/cmatulis/public_html/project/blog-functions.php");
@@ -7,24 +16,20 @@ require_once("/students/cmatulis/public_html/cs304/cmatulis-dsn.inc");
 
 $dbh = db_connect($cmatulis_dsn);
 
+session_start();
+
 // if there is not a user logged in, redirect to login page
-if(!isset($_COOKIE['304bloguserphp'])) {
-    header('Location: blog-ex-login-user.php');
+if(!isset($_SESSION['user'])) {
+    header('Location: blog-login.php');
 }
 
-
-$poster = $_COOKIE['304bloguserphp']; 
-if(isset($_POST['new_entry'])) {
-    insertPost($dbh,$poster,$_POST['new_entry']);
-}
-
+$poster = $_SESSION['user']; 
 
 // if a user is commenting on a post
 if (isSet($_POST['blogComment'])){
+	// insert comment into the database
 	$insert = "insert into comments(entry_id, commenting_user, comment_text) values(?, ?, ?)";
 	$rows = prepared_statement($dbh, $insert, array($_POST['entryId'], $poster, $_POST['blogComment']));
-	
-
 }
 
 // if a user is liking a post

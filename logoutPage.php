@@ -16,11 +16,9 @@ require_once("/students/cmatulis/public_html/cs304/cmatulis-dsn.inc");
 
 $dbh = db_connect($cmatulis_dsn);
 
-// unset the cookie and set it to a value with a negative timestamp
-if(isset($_COOKIE['304bloguserphp'])) {
-  	unset($_COOKIE['304bloguserphp']);
-  	setcookie('304bloguserphp', '', time() - 3600); // empty value and old timestamp
-}
+// destroy the session variable to log the user out
+session_start();
+session_destroy();
 
 $msg = "";
 $resultid = 0;

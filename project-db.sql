@@ -10,7 +10,7 @@ drop table if exists blog_user;
 create table blog_user(
     user varchar(30) primary key,
     pass varchar(30),
-    cryp char(41),
+    cryp varchar(41),
     email varchar(50),
     activation varchar(40),
     INDEX (user)
@@ -34,7 +34,7 @@ create table blog_entry(
        entered timestamp,
        user varchar(30),
        title text,
-       entry blob,
+       entry text,
        caption text,
        entry_id int not null auto_increment primary key,
        INDEX (entry_id),
