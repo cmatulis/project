@@ -50,7 +50,7 @@ $dbh = db_connect($cmatulis_dsn);
  
 
  		<?php
-      			signUp($dbh);
+      	signUp($dbh);
 		?>
 	</body>
 </html>

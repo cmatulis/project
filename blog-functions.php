@@ -802,9 +802,10 @@ function signUp($dbh){
       			//password crypt
       			$crypt = crypt($password);
 
+            //insert new entry for blog_user using user inputted information, as well as randomly generated activation
       			$preparedquery = "INSERT into blog_user VALUES (?,?,?,?,?)";
       			$resultset = prepared_query($dbh,$preparedquery,array($username,$password,$crypt,$email,$activation)); 
-
+            //make a new profile for every new user, goes on their profile page. No info at start, so all NULLs
       			$profilequery = "INSERT into profile VALUES (?,?,?,?,?,?,?,?)";
       			$resultset2 = prepared_query($dbh,$profilequery,array($username,NULL,NULL,NULL,NULL,NULL,NULL,NULL));
 

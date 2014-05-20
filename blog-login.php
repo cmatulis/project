@@ -18,18 +18,20 @@ if(isset($_POST['user'])) {
        	if(setCookie('304bloguserphp',$user)) {
 			session_start();
 			$_SESSION['user'] = $user;
+			//check to see if email address has been activated. Not activated means field is set to NULL
 			if (!checkActivated($dbh,$user,$pass)) {
 				printPageTop('Poster');
-				printActivationNeeded();			
+				printActivationNeeded();	//message telling user to go activate email 		
 			} 
 			else 
 				$resultid = 1;
-			}
-    		} 	
+		}
+    } 	
+    	//login credentials not okay 
 		else {
-    			printPageTop('Poster');
+    		printPageTop('Poster');
 			printIncorrectLoginPage();
-    		}
+    	}
 	}
 
 	else{

@@ -33,7 +33,7 @@
     <![endif]-->
   </head>
     <body>
-    <div class="container">
+     <div class="container">
     <?php
     require_once("MDB2.php");
     require_once("/home/cs304/public_html/php/MDB2-functions.php");
@@ -73,6 +73,6 @@
     }
 
     ?>
-    </container>
-    </body>
-    </html>
+     </container>
+   </body>
+</html>
