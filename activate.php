@@ -62,7 +62,7 @@
         if ($result_activate_account)//if update query was successfull
         {
         echo '<div class="alert alert-success">
-            <p class="text-center">Your account is now active. You may now <a href="blog-ex-login-user.php">Log in</a></p></div>';
+            <p class="text-center">Your account is now active. You may now <a href="blog-login.php">Log in</a></p></div>';
 
         } else
         {
